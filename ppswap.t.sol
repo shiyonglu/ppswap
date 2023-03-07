@@ -30,16 +30,18 @@ contract PPSwapTest is Test {
         assertEq(balAfter-balBefore, 1234);
     }
 
-/*
-    function testFlashLoanAttack() public {
-        uint totalSupply = ppswap.totalSupply();
-        uint balInPPswap = ppswap.balanceOf(address(ppswap));
-        assertEq(balInPPswap, totalSupply);
+    function testWithdrawSavings() public{
+        ppswap.depositSavings(5000);
+        uint balBefore = ppswap.balanceOf(address(this));
+        ppswap.withdrawSavings(1500);
+        uint balAfter = ppswap.balanceOf(address(this));
+        assertEq(balAfter-balBefore, 1500);
+    }
 
+    function testFlashLoanAttack() public {
+       
        Attacker.callFlashLoan(1000);
        uint balAttacker = ppswap.balanceOf(address(Attacker));
        assertEq(balAttacker, 1000);
     }
-*/
-
 }
