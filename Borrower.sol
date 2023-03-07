@@ -24,7 +24,6 @@ contract Borrower {
              revert("I never loaned");
 
        // instead of returning I deposit     
-        pool.approve(address(pool), amount);
         pool.depositSavings(amount); 
 
         return true;
