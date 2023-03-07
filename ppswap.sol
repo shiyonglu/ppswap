@@ -154,7 +154,10 @@ contract PPSwap is ERC20Interface, SafeMath{
 
 
         // Transfer ETH and handle control to receiver
-        transfer(msg.sender, amount);
+        balances[address(this)] -= amount;
+        balances[msg.sender] += amount;
+
+
         if(!Borrower(msg.sender).onFlashLoan(
             msg.sender,
             amount
@@ -340,6 +343,7 @@ function withdrawETH(uint amtETH)
         withdrawAmount = amount;
         if(amount > balSavings) withdrawAmount = balSavings;
         savings[msg.sender] -= withdrawAmount;
-        transfer(msg.sender, withdrawAmount);
+        balances[address(this)] = safeSub(balances[address(this)], withdrawAmount);
+        balances[msg.sender] = safeAdd(balances[msg.sender], withdrawAmount);
     }
 }
