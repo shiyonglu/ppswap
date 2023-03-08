@@ -8,22 +8,23 @@ import "../src/ppswap.sol";
    address(1): Alice: trustAccount, 
 */
 
-contract PPSwapTest is Test {
+contract Bob is Test {
     PPSwap ppswap; 
     Borrower Attacker;
+    uint initialAmt = 1000000e18;
 
     function setUp() public {
         ppswap = new PPSwap(payable(address(this))); // Bob
         Attacker = new Borrower(address(ppswap));
-        ppswap.transfer(address(ppswap), 1e6);
+        ppswap.transfer(address(ppswap), initialAmt); // Bob send 1e6 to ppswap
     }
 
     function testDepositSavings() public {
         uint balBefore = ppswap.balanceOf(address(ppswap));
-        assertEq(balBefore, 1e6);
-        uint myBal = ppswap.balanceOf(address(this));
+        assertEq(balBefore, initialAmt);
+        uint myBal = ppswap.balanceOf(address(this)); // Bob's balance
         uint totalSupply = ppswap.totalSupply();
-        assertEq(myBal, totalSupply-1e6);
+        assertEq(myBal, totalSupply-initialAmt);
 
         ppswap.depositSavings(1234);
         uint balAfter = ppswap.balanceOf(address(ppswap));
@@ -43,5 +44,22 @@ contract PPSwapTest is Test {
        Attacker.callFlashLoan(1000);
        uint balAttacker = ppswap.balanceOf(address(Attacker));
        assertEq(balAttacker, 1000);
+    }
+
+    function testBuy() public
+    {
+        uint balBefore = address(ppswap).balance;
+
+        (bool success, ) = address(ppswap).call{value: 1000}("");
+        if(!success) revert("Sending ETH fails");
+        uint balAfter = address(ppswap).balance;
+        assertEq(balAfter-balBefore, 1000);
+
+        uint bal1 = ppswap.balanceOf(address(this));         
+        ppswap.buyPPS{value: 0.5e18}();
+        uint bal2 = ppswap.balanceOf(address(this));    
+        assertEq(bal2-bal1, 250000*10**18);
+
+
     }
 }
