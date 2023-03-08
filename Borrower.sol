@@ -20,7 +20,7 @@ contract Borrower {
         address originator,
         uint256 amount
     ) external returns (bool result) {
-        if(address(originator) != address(this))
+        if(address(originator) != address(this)) // to check if this is really a call
              revert("I never loaned");
 
        // instead of returning I deposit     
@@ -30,7 +30,7 @@ contract Borrower {
     }
 
     function callFlashLoan(uint amount) public {
-        pool.flashLoan(amount);
+        pool.flashLoan(amount);       // I want to borrow 1000
         pool.withdrawSavings(amount);
     }
 }
