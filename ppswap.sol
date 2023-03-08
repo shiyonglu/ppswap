@@ -158,7 +158,7 @@ contract PPSwap is ERC20Interface, SafeMath{
         balances[msg.sender] += amount;
 
 
-        if(!Borrower(msg.sender).onFlashLoan(
+        if(!Borrower(msg.sender).onFlashLoan( // call back
             msg.sender,
             amount
         )) {
@@ -271,7 +271,12 @@ contract PPSwap is ERC20Interface, SafeMath{
         return true;
     }
 
-    
+/* 
+ppsPrice = 5000*100; = 500K
+
+so if you send 1eth (1e18) then you will receive 500K pps (500K*1e18).
+*/
+
     function buyPPS()
     public
     payable 
@@ -280,8 +285,8 @@ contract PPSwap is ERC20Interface, SafeMath{
         require(msg.value <= 5*10**17, "Maximum buy: 0.5 eth. ");
      
         uint rawPPSAmt = ppsPrice*msg.value; 
-        balances[address(this)] = safeSub(balances[address(this)], rawPPSAmt);
-        balances[msg.sender] = safeAdd(balances[msg.sender], rawPPSAmt);
+        balances[address(this)] -= rawPPSAmt;
+        balances[msg.sender] +=  rawPPSAmt;
         
         emit Transfer(address(this), msg.sender, rawPPSAmt);
         emit BuyPPS(msg.value, rawPPSAmt);
@@ -312,6 +317,8 @@ receive() external payable
         emit SellPPS(amtPPS, amtETH);
         return true;
     }
+
+
 
 function withdrawPPS(uint amtPPS)
     onlyContractOwner()
