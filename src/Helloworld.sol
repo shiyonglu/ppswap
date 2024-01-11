@@ -8,7 +8,7 @@ contract Helloworld {
         owner = initialOwner;
     }
 
-    function greeting() public returns (string memory message) {
+    function greeting() public pure returns (string memory message) {
         return "hello";
     }
 
