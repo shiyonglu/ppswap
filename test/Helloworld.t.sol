@@ -1,3 +1,5 @@
+// Check other assert functions here: https://book.getfoundry.sh/reference/ds-test#asserting
+
 pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
