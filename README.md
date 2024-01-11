@@ -1,12 +1,12 @@
-*To install foundry: 
+# To install foundry: 
 
 1. download foundryup:
     curl -L https://foundry.paradigm.xyz | bash
 2.  install foundry:
     foundryup
-3. Now you have four commands to use: forge, cast, anvil and chisel.
+3. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
 
-*Let's learn how to use the command forge
+## Let's learn how to use the command ``forge``
 
 1. create and init a project:
    forge init myproj
