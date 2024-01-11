@@ -1,0 +1,16 @@
+1. Prepare a notebook that you will write down important information such as password and recovery phrase for your wallet.
+
+2. Install your wallet Metamask from https://metamask.io/
+
+Links to an external site.
+
+3. Import Polygon and some testnets into your metamask using chainlist.org
+Links to an external site.. (a second way: https://docs.polygon.technology/tools/wallets/metamask/add-polygon-network/#mainnet_1
+
+Links to an external site.)
+
+4. Copy your account 1 address to the chatroom of Zoom, the TA will send you 1 MATIC. 
+
+5. After you receive 1 MATIC, find a partner so that you two will send each other 0.1 MATIC.
+
+Congratulations, you just learned how to use the your wallet to send and receive cryptos!
