@@ -13,7 +13,7 @@ contract AuthorizedHelloworld {
         _;
     }
 
-    function greeting() onlyOwner public returns (string memory message) {
+    function greeting() onlyOwner public view returns (string memory message) {
         return "hello";
     }
 
