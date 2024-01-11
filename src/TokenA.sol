@@ -1,3 +1,7 @@
+// Deployed on Polygon on 1/11/2024, 
+// gas fee: spent 0.10860865MATIC which is around 8 cents on 1/11/2024
+// Polygonscan page: https://polygonscan.com/token/0xd03c5c70936b4f85e6b70e453d42c86d3a53f1cc
+
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity 0.8.17;
 
@@ -6,7 +10,7 @@ contract TokenA{
     string public constant name = "TokenA";
     string public constant symbol = "AAA";
     uint8 public constant decimals = 18; // 18 decimals is the strongly suggested default, avoid changing it
-    uint public constant _totalSupply = 1_000_000_000; // one billion 
+    uint public constant _totalSupply = 1_000_000_000 * 1e18; // one billion 
 
     address public contractOwner;
  
