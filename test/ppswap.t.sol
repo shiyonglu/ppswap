@@ -3,7 +3,7 @@ pragma solidity 0.8.17;
 
 import "forge-std/Test.sol";
 import "../src/ppswap.sol";
-import {FlashLoanAttacker} from "../src/FlashloanAttacker.sol";
+import {FlashLoanAttacker} from "../src/FlashLoanAttacker.sol";
 
 /* 
 Check other assert functions here: https://book.getfoundry.sh/reference/ds-test#asserting
