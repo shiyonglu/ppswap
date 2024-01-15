@@ -15,7 +15,8 @@ contract ArbitrageTest is Test{           // TokenB is a ERC4626 vault
     address private constant POLC = 0xaA8330FB2B4D5D07ABFE7A72262752a8505C6B37; // on ethereum
     address private constant AIDI = 0xE3e24b4eA87935e15bbE99A24E9AcE9998e4614d; // on ethereum
     address private constant PORT3 = 0xb4357054c3dA8D46eD642383F03139aC7f090343; // on ethereum
-    address private constant MATIC = 0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0; 
+    address private constant MATIC = 0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0;  // on ethereum
+    address private constant SHIB = 0x95aD61b0a150d79219dCF64E1E6Cc01f0B64C4cE; // on thereum
 
 
     function setUp() public {
@@ -116,10 +117,10 @@ contract ArbitrageTest is Test{           // TokenB is a ERC4626 vault
         
         IERC20(WETH).transfer(address(arbitrage), amount);
 
-        arbitrage.performArbitrageFromUniswapV2ToSushiswap(WETH, token, amount, 0);
+        arbitrage.performArbitrageFromUniswapV3ToSushiswap(WETH, token, amount, 0);
 
         arbitrage.retrieveTokens(WETH, IERC20(WETH).balanceOf(address(arbitrage)));
-        
+
         console2.log("My final WETH balance: ", IERC20(WETH).balanceOf(address(this)));
     }
 }
