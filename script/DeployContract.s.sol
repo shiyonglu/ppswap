@@ -14,8 +14,8 @@
  */
 
 
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.13;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.17;
 
 import {Script, console2} from "forge-std/Script.sol";
 import {ERC20Mock} from "openzeppelin-contracts/contracts/mocks/token/ERC20Mock.sol";
