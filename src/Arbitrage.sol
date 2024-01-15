@@ -70,17 +70,36 @@ interface ISushiSwapRouter {
 
 contract Arbitrage {
     address public owner;
-    IUniswapV2Router private immutable uniswapV2Router = IUniswapV2Router(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
-    IUniswapV3Router private immutable uniswapV3Router = IUniswapV3Router(0xE592427A0AEce92De3Edee1F18E0157C05861564);
-    ISushiSwapRouter private immutable sushiswapRouter = ISushiSwapRouter(0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F);
+    IUniswapV2Router private  uniswapV2Router;
+    IUniswapV3Router private  uniswapV3Router;
+    ISushiSwapRouter private  sushiswapRouter;
     
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
         _;
     }
     
+
+
     constructor() {
         owner = msg.sender;
+    }
+
+
+
+  // Setter function for uniswapV2Router
+    function setUniswapV2Router(address _router) external onlyOwner {
+        uniswapV2Router = IUniswapV2Router(_router);
+    }
+
+    // Setter function for uniswapV3Router
+    function setUniswapV3Router(address _router) external onlyOwner {
+        uniswapV3Router = IUniswapV3Router(_router);
+    }
+
+    // Setter function for sushiswapRouter
+    function setSushiswapRouter(address _router) external onlyOwner {
+        sushiswapRouter = ISushiSwapRouter(_router);
     }
 
     // Swap tokens using Uniswap V2
@@ -156,6 +175,67 @@ contract Arbitrage {
             block.timestamp + 600
         );
     }
+
+    // Arbitrage function: Buy token on Uniswap V2 and sell on Uniswap V3
+    function performArbitrageFromUniswapV2ToV3(
+        address _tokenIn,           // Input token (WETH)
+        address _tokenOut,          // Output token to be traded
+        uint256 _amountIn,          // Amount of input token to be traded
+        uint256 _minProfit         // Minimum profit desired
+    ) external onlyOwner {
+        // Get the initial balance of the input token (WETH)
+        uint256 initialBalance = IERC20(_tokenIn).balanceOf(address(this));
+
+        // Approve the Uniswap V2 Router to spend the input token (WETH)
+        IERC20(_tokenIn).approve(address(uniswapV2Router), _amountIn);
+
+        // Create a path array for Uniswap V2 with WETH as input and the desired token as output
+        address[] memory uniswapV2Path = new address[](2);
+        uniswapV2Path[0] = _tokenIn;
+        uniswapV2Path[1] = _tokenOut;
+
+        // Perform the swap on Uniswap V2
+         uint256[] memory amountsOut = uniswapV2Router.swapExactTokensForTokens(
+            _amountIn,
+            0, // Set to 0 to allow any amount of output token
+            uniswapV2Path,
+            address(this),
+            block.timestamp + 600
+        );
+
+        // Get the amount of output token received
+        uint256 amountOut = amountsOut[amountsOut.length - 1];
+
+        // Approve the Uniswap V3 Router to spend the received token
+        IERC20(_tokenOut).approve(address(uniswapV3Router), amountOut);
+
+        IUniswapV3Router.ExactInputSingleParams memory params = IUniswapV3Router
+            .ExactInputSingleParams({
+                tokenIn: _tokenOut,
+                tokenOut: _tokenIn,
+                fee: 3000,     // 500, 3000, 10000
+                recipient: address(this),
+                deadline: block.timestamp + 600, // Extend the deadline for Uniswap V3
+                amountIn: amountOut,
+                amountOutMinimum: 0,
+                sqrtPriceLimitX96: 0
+            });
+
+        // Perform the swap on Uniswap V3
+        uniswapV3Router.exactInputSingle(params);
+
+        if(IERC20(_tokenIn).balanceOf(address(this)) <= initialBalance){
+                console2.log("Sorry, there is no profit.");
+        }
+
+        // Check if the profit is greater than or equal to the minimum profit desired
+        uint256 profit = IERC20(_tokenIn).balanceOf(address(this)) - initialBalance;
+        require(profit >= _minProfit, "Minimum profit is not met.");
+
+        // Revert if there is no profit
+        require(profit > 0, "No profit obtained.");
+    }
+
 
 
     function performArbitrageFromUniswapV2ToSushiswap(
