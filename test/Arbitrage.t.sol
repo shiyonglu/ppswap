@@ -34,98 +34,66 @@ contract ArbitrageTest is Test{           // TokenB is a ERC4626 vault
 
     address private constant WETH_ON_POLYGON = 0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619;
     address private constant SHIB_ON_POLYGON = 0x6f8a06447Ff6FcF75d803135a7de15CE88C1d4ec;
-     address private constant LINK_ON_POLYGON = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
+    address private constant LINK_ON_POLYGON = 0x53E0bca35eC356BD5ddDFebbD1Fc0fD03FaBad39;
+    address private constant MANA_ON_POLYGON = 0xA1c57f48F0Deb89f569dFbE6E2B7f46D33606fD4;
 
 
     function setUp() public {
-        vm.createSelectFork(vm.rpcUrl("https://polygon-mainnet.g.alchemy.com/v2/kG1HifS-s10GWNUIhkZIwTmIZqe2tbD1"));
-        // vm.createSelectFork(vm.rpcUrl("https://mainnet.infura.io/v3/95310f60af7b44bb8f3b13c043a00c8f"));
+        // vm.createSelectFork(vm.rpcUrl("https://polygon-mainnet.g.alchemy.com/v2/kG1HifS-s10GWNUIhkZIwTmIZqe2tbD1"));
+        vm.createSelectFork(vm.rpcUrl("https://mainnet.infura.io/v3/95310f60af7b44bb8f3b13c043a00c8f"));
         
 
         arbitrage = new Arbitrage();
-        arbitrage.setUniswapV2Router(address(uniswapV2Router_ON_POLYGON));
-        arbitrage.setUniswapV3Router(address(uniswapV3Router_ON_POLYGON));
-        arbitrage.setSushiswapRouter(address(sushiswapRouter_ON_POLYGON));
+        arbitrage.setUniswapV2Router(address(uniswapV2Router_ON_ETH));
+        arbitrage.setUniswapV3Router(address(uniswapV3Router_ON_ETH));
+        arbitrage.setSushiswapRouter(address(sushiswapRouter_ON_ETH));
+        arbitrage.setWETHAddress(WETH);
     }
    
 
+    function testBuyTokenWithNativeV2() public{
+        address token = MANA;
+        uint256 amountIn = 0.1 ether;
+
+
+        deal(address(this), amountIn);
+        arbitrage.swapExactETHForTokensAtUniswapV2{value: amountIn}(token, 0);
+        console2.log("My token balance: ", IERC20(token).balanceOf(address(this)));
+    }
  
     function testBuyTokenV2() public { // at uniswap V2
-        address token = LINK_ON_POLYGON;
+        address token = MANA;
+        uint256 amountIn = 0.1 ether;
+
+        deal(WETH,  address(this), amountIn);
+         
+        IERC20(WETH).approve(address(arbitrage), amountIn);
+        
+        arbitrage.swapTokensAtUniswapV2(WETH, token, amountIn, 0);
+        console2.log("My token balance: ", IERC20(token).balanceOf(address(this)));
+    }
+
+     function testBuyTokenAtSushiSwap() public { // at uniswap V2
+        address token = MANA;
         uint256 amount = 0.1 ether;
 
 
-        deal(WETH_ON_POLYGON,  address(this), amount);
-        IERC20(WETH_ON_POLYGON).transfer(address(arbitrage), amount);
-        arbitrage.swapTokensAtUniswapV2(WETH_ON_POLYGON, token, amount, 0);
-        arbitrage.retrieveTokens(token, IERC20(token).balanceOf(address(arbitrage)));
+        deal(WETH,  address(this), amount);
+        IERC20(WETH).approve(address(arbitrage), amount);
+        arbitrage.swapTokensAtSushiswap(WETH, token, amount, 0);
        console2.log("My token balance: ", IERC20(token).balanceOf(address(this)));
     }
 
-/*
+
      function testBuyTokenV3() public { // at Uniswap V3
-        address token = PORT3;
+        address token = AAVE;
         uint256 amount = 0.1 ether;
 
 
         deal(WETH, address(this), amount);
-        IERC20(WETH).transfer(address(arbitrage), amount);
+        IERC20(WETH).approve(address(arbitrage), amount);
         arbitrage.swapTokensAtUniswapV3(WETH, token, amount, 0);
-        arbitrage.retrieveTokens(token, IERC20(token).balanceOf(address(arbitrage)));
         console2.log("My token balance: ", IERC20(token).balanceOf(address(this)) / IERC20Metadata(token).decimals());
-    }
-
-    function testBuysell() public{
-        address token = DINGER;
-        uint256 amount = 0.1 ether;
-
-        deal(WETH, address(this), amount);
-           console2.log("My WETH initial balance: ", IERC20(WETH).balanceOf(address(this)));
-
-        IERC20(WETH).transfer(address(arbitrage), amount);
-
-       console2.log("1111111111111");
-        uint256 beforeTokenBalance = IERC20(token).balanceOf(address(arbitrage));
-        console2.log("beforeTokenBalance", beforeTokenBalance);
-
-        arbitrage.swapTokensAtUniswapV2(WETH, token, amount, 0);
-        uint256 afterTokenBalance = IERC20(token).balanceOf(address(arbitrage));
-
-        console2.log("afterTokenBalance", afterTokenBalance);
- 
-       vm.roll(block.number + 1);
-        arbitrage.swapTokensAtUniswapV2(token, WETH, afterTokenBalance-beforeTokenBalance, 0);
-
-        arbitrage.retrieveTokens(WETH, IERC20(WETH).balanceOf(address(arbitrage)));
-
-        console2.log("My final WETH balance: ", IERC20(WETH).balanceOf(address(this)));
-
-    }
-
-    function testBuysell2() public{  // using shushiswap
-        address token = MATIC;
-        uint256 amount = 0.1 ether;
-
-        deal(WETH, address(this), amount);
-           console2.log("My WETH initial balance: ", IERC20(WETH).balanceOf(address(this)));
-
-        IERC20(WETH).transfer(address(arbitrage), amount);
-
-       console2.log("1111111111111");
-        uint256 beforeTokenBalance = IERC20(token).balanceOf(address(arbitrage));
-        console2.log("beforeTokenBalance", beforeTokenBalance);
-
-        arbitrage.swapTokensAtSushiswap(WETH, token, amount, 0);
-        uint256 afterTokenBalance = IERC20(token).balanceOf(address(arbitrage));
-
-        console2.log("afterTokenBalance", afterTokenBalance);
- 
-       vm.roll(block.number + 1);
-        arbitrage.swapTokensAtSushiswap(token, WETH, afterTokenBalance-beforeTokenBalance, 0);
-
-        arbitrage.retrieveTokens(WETH, IERC20(WETH).balanceOf(address(arbitrage)));
-
-        console2.log("My final WETH balance: ", IERC20(WETH).balanceOf(address(this)));
     }
 
     
@@ -146,5 +114,5 @@ contract ArbitrageTest is Test{           // TokenB is a ERC4626 vault
 
         console2.log("My final WETH balance: ", IERC20(WETH).balanceOf(address(this)));
     }
-    */
+    
 }
