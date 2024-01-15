@@ -122,7 +122,7 @@ contract Arbitrage {
                 tokenIn: _tokenIn,
                 tokenOut: _tokenOut,
                 fee: 3000,     // 500, 3000, 10000
-                recipient: msg.sender,
+                recipient: address(this),
                 deadline: block.timestamp,
                 amountIn: _amountIn,
                 amountOutMinimum: _amountOutMin,
@@ -203,7 +203,7 @@ contract Arbitrage {
                 block.timestamp + 600
             );
 
-            if(IERC20(_tokenIn).balanceOf(address(this)) < initialBalance){
+            if(IERC20(_tokenIn).balanceOf(address(this)) <= initialBalance){
                 console2.log("Sorry, there is no profit.");
             }
 
@@ -232,7 +232,7 @@ contract Arbitrage {
                     tokenIn: _tokenIn,
                     tokenOut: _tokenOut,
                     fee: 3000,     // 500, 3000, 10000
-                    recipient: msg.sender,
+                    recipient: address(this),
                     deadline: block.timestamp,
                     amountIn: _amountIn,
                     amountOutMinimum: 0,
@@ -241,8 +241,10 @@ contract Arbitrage {
 
                uniswapV3Router.exactInputSingle(params);
             
+            
             // Get the amount of output token received
             uint256 amountOut =  IERC20(_tokenOut).balanceOf(address(this)) - _tokenOutInitialBalance;
+            console2.log("amoutnOut: ", amountOut);
 
             // Approve the Sushiswap Router to spend the received token
             IERC20(_tokenOut).approve(address(sushiswapRouter), amountOut);
@@ -261,7 +263,7 @@ contract Arbitrage {
                 block.timestamp + 600
             );
 
-            if(IERC20(_tokenIn).balanceOf(address(this)) < initialBalance){
+            if(IERC20(_tokenIn).balanceOf(address(this)) <= initialBalance){
                 console2.log("Sorry, there is no profit.");
             }
 
