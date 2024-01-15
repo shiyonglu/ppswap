@@ -159,60 +159,120 @@ contract Arbitrage {
 
 
     function performArbitrageFromUniswapV2ToSushiswap(
-        address _tokenIn,           // Input token (WETH)
-        address _tokenOut,          // Output token to be traded
-        uint256 _amountIn,          // Amount of input token to be traded
-        uint256 _minProfit         // Minimum profit desired
-    ) external onlyOwner {
-        uint256 initialBalance = IERC20(_tokenIn).balanceOf(address(this));
+            address _tokenIn,           // Input token (WETH)
+            address _tokenOut,          // Output token to be traded
+            uint256 _amountIn,          // Amount of input token to be traded
+            uint256 _minProfit         // Minimum profit desired
+        ) external onlyOwner {
+            uint256 initialBalance = IERC20(_tokenIn).balanceOf(address(this));
 
-        // Approve the Uniswap V2 Router to spend the input token (WETH)
-        IERC20(_tokenIn).approve(address(uniswapV2Router), _amountIn);
-        
-        // Create a path array for Uniswap V2 with WETH as input and the desired token as output
-        address[] memory uniswapV2Path = new address[](2);
-        uniswapV2Path[0] = _tokenIn;
-        uniswapV2Path[1] = _tokenOut;
-        
-        // Perform the swap on Uniswap V2
-        uint256[] memory amountsOut = uniswapV2Router.swapExactTokensForTokens(
-            _amountIn,
-            0, // Set to 0 to allow any amount of output token
-            uniswapV2Path,
-            address(this),
-            block.timestamp + 600
-        );
-        
-        // Get the amount of output token received
-        uint256 amountOut = amountsOut[amountsOut.length - 1];
+            // Approve the Uniswap V2 Router to spend the input token (WETH)
+            IERC20(_tokenIn).approve(address(uniswapV2Router), _amountIn);
+            
+            // Create a path array for Uniswap V2 with WETH as input and the desired token as output
+            address[] memory uniswapV2Path = new address[](2);
+            uniswapV2Path[0] = _tokenIn;
+            uniswapV2Path[1] = _tokenOut;
+            
+            // Perform the swap on Uniswap V2
+            uint256[] memory amountsOut = uniswapV2Router.swapExactTokensForTokens(
+                _amountIn,
+                0, // Set to 0 to allow any amount of output token
+                uniswapV2Path,
+                address(this),
+                block.timestamp + 600
+            );
+            
+            // Get the amount of output token received
+            uint256 amountOut = amountsOut[amountsOut.length - 1];
 
-        // Approve the Sushiswap Router to spend the received token
-        IERC20(_tokenOut).approve(address(sushiswapRouter), amountOut);
+            // Approve the Sushiswap Router to spend the received token
+            IERC20(_tokenOut).approve(address(sushiswapRouter), amountOut);
 
-        // Create a path array for Sushiswap with the received token as input and WETH as output
-        address[] memory sushiswapPath = new address[](2);
-        sushiswapPath[0] = _tokenOut;
-        sushiswapPath[1] = _tokenIn;
+            // Create a path array for Sushiswap with the received token as input and WETH as output
+            address[] memory sushiswapPath = new address[](2);
+            sushiswapPath[0] = _tokenOut;
+            sushiswapPath[1] = _tokenIn;
 
-        // Perform the swap on Sushiswap
-        sushiswapRouter.swapExactTokensForTokens(
-            amountOut, // Use the received amount as input
-            0, // Set to 0 to allow any amount of WETH as output
-            sushiswapPath,
-            address(this),
-            block.timestamp + 600
-        );
+            // Perform the swap on Sushiswap
+            sushiswapRouter.swapExactTokensForTokens(
+                amountOut, // Use the received amount as input
+                0, // Set to 0 to allow any amount of WETH as output
+                sushiswapPath,
+                address(this),
+                block.timestamp + 600
+            );
 
-        // Calculate the profit obtained after the arbitrage
-        int256 profit = IERC20(_tokenIn).balanceOf(address(this)) - initialBalance;
+            if(IERC20(_tokenIn).balanceOf(address(this)) < initialBalance){
+                console2.log("Sorry, there is no profit.");
+            }
 
-        if(profit < 0){
-            console2.log("Sorry, there is no profit. ");
+            // Calculate the profit obtained after the arbitrage
+            uint256 profit = IERC20(_tokenIn).balanceOf(address(this)) - initialBalance;
+
+
+            // Revert if the profit condition is not met
+            require(profit >= _minProfit, "Minimum profit is not met.");
         }
 
-        // Revert if the profit condition is not met
-        require(profit >= _minProfit, "Minimum profit is not met.");
-    }
+        function performArbitrageFromUniswapV3ToSushiswap(
+            address _tokenIn,           // Input token (WETH)
+            address _tokenOut,          // Output token to be traded
+            uint256 _amountIn,          // Amount of input token to be traded
+            uint256 _minProfit         // Minimum profit desired
+        ) external onlyOwner {
+            uint256 initialBalance = IERC20(_tokenIn).balanceOf(address(this));
+
+            // Approve the Uniswap V2 Router to spend the input token (WETH)
+            IERC20(_tokenIn).approve(address(uniswapV3Router), _amountIn);
+
+            uint256 _tokenOutInitialBalance = IERC20(_tokenOut).balanceOf(address(this));
+            IUniswapV3Router.ExactInputSingleParams memory params = IUniswapV3Router
+                .ExactInputSingleParams({
+                    tokenIn: _tokenIn,
+                    tokenOut: _tokenOut,
+                    fee: 3000,     // 500, 3000, 10000
+                    recipient: msg.sender,
+                    deadline: block.timestamp,
+                    amountIn: _amountIn,
+                    amountOutMinimum: 0,
+                    sqrtPriceLimitX96: 0
+                });
+
+               uniswapV3Router.exactInputSingle(params);
+            
+            // Get the amount of output token received
+            uint256 amountOut =  IERC20(_tokenOut).balanceOf(address(this)) - _tokenOutInitialBalance;
+
+            // Approve the Sushiswap Router to spend the received token
+            IERC20(_tokenOut).approve(address(sushiswapRouter), amountOut);
+
+            // Create a path array for Sushiswap with the received token as input and WETH as output
+            address[] memory sushiswapPath = new address[](2);
+            sushiswapPath[0] = _tokenOut;
+            sushiswapPath[1] = _tokenIn;
+
+             // Perform the swap on Sushiswap
+            sushiswapRouter.swapExactTokensForTokens(
+                amountOut, // Use the received amount as input
+                0, // Set to 0 to allow any amount of WETH as output
+                sushiswapPath,
+                address(this),
+                block.timestamp + 600
+            );
+
+            if(IERC20(_tokenIn).balanceOf(address(this)) < initialBalance){
+                console2.log("Sorry, there is no profit.");
+            }
+
+            // Calculate the profit obtained after the arbitrage
+            uint256 profit = IERC20(_tokenIn).balanceOf(address(this)) - initialBalance;
+
+
+            // Revert if the profit condition is not met
+            require(profit >= _minProfit, "Minimum profit is not met.");
+        }
+
 
     
     // Retrieve tokens from the contract
