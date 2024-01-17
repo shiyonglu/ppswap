@@ -13,9 +13,9 @@ contract MyFirstTest is Test {
     function setUp() public {
     }
 
-    function testFirstTest() public {
-       console2.log("My first test below");
-       assertEq(1, 1);
+    function testFirstTest() public view {
+       console2.log("Congratulations, you first test passed!");
+
     }
 
 }
