@@ -12,6 +12,10 @@ contract MyFirstTest is Test {
     address victim2 = makeAddr("victim2");
 
     function setUp() public {
+        // need to fork
+        // vm.createSelectFork(vm.rpcUrl("https://polygon-mainnet.g.alchemy.com/v2/kG1HifS-s10GWNUIhkZIwTmIZqe2tbD1"));
+        // vm.createSelectFork(vm.rpcUrl("https://mainnet.infura.io/v3/95310f60af7b44bb8f3b13c043a00c8f"));
+        
     }
 
     function testFirstTest() public view {
