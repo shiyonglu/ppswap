@@ -7,6 +7,7 @@ import {Test, console2} from "forge-std/Test.sol";
 
 contract MyFirstTest is Test {
     address deployer = makeAddr("deployer");
+    address owner = makeAddr("owner");
     address victim1 = makeAddr("victim1");
     address victim2 = makeAddr("victim2");
 
