@@ -1,3 +1,5 @@
+// commmand: forge test --match-test testFirstTest -vv
+
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
