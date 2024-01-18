@@ -6,6 +6,15 @@ import "forge-std/Test.sol";
 import {IERC20, ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 interface IUniswapV2Router {
+
+    function swapExactETHForTokens(
+        uint amountOutMin, 
+        address[] calldata path, 
+        address to, 
+        uint deadline
+    ) external payable returns (uint[] memory amounts);
+
+
     function swapExactTokensForTokens(
         uint256 amountIn, 
         uint256 amountOutMin, 
@@ -21,6 +30,7 @@ interface IUniswapV2Router {
         address to, 
         uint256 deadline
     ) external returns (uint256[] memory amounts);
+
 }
 interface IUniswapV3Router {
     struct ExactInputSingleParams {
@@ -73,6 +83,7 @@ contract Arbitrage {
     IUniswapV2Router private  uniswapV2Router;
     IUniswapV3Router private  uniswapV3Router;
     ISushiSwapRouter private  sushiswapRouter;
+    address  private weth;
     
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -102,6 +113,34 @@ contract Arbitrage {
         sushiswapRouter = ISushiSwapRouter(_router);
     }
 
+    function setWETHAddress( address weth_) external onlyOwner{
+        weth = weth_;
+    }
+
+
+    function swapExactETHForTokensAtUniswapV2(
+        address tokenAddress, // Address of the token you want to receive
+        uint256 minTokens    // Minimum amount of tokens to receive
+    ) external payable onlyOwner {
+        // Ensure that the contract has sufficient ETH to perform the swap
+        require(msg.value > 0, "ETH amount should be greater than 0");
+
+
+        address[] memory path = new address[](2);
+        path[0] = weth; 
+        path[1] = tokenAddress; 
+
+
+        // Swap ETH for tokens
+        uniswapV2Router.swapExactETHForTokens{value: msg.value}(
+            minTokens,     // Minimum amount of tokens to receive
+            path,          // Token path
+            msg.sender,    // Recipient address
+            block.timestamp + 600       // Deadline for the transaction
+        );
+
+    }
+
     // Swap tokens using Uniswap V2
  // Swap tokens using Uniswap V2
     function swapTokensAtUniswapV2(
@@ -110,23 +149,27 @@ contract Arbitrage {
         uint256 _amountIn,
         uint256 _amountOutMin
     ) external onlyOwner {
+
+        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+
         // Approve the router to spend the tokenIn
         IERC20(_tokenIn).approve(address(uniswapV2Router), _amountIn);
-        
         // Create a path array with just the input and output tokens
         address[] memory _path = new address[](2);
         _path[0] = _tokenIn;
         _path[1] = _tokenOut;
-        
+                
         // Perform the swap
         uniswapV2Router.swapExactTokensForTokens(
             _amountIn,
             _amountOutMin,
             _path,
-            address(this),
+            msg.sender,
             block.timestamp + 600
         );
+        
     }
+
 
     function swapTokensAtUniswapV3(
         address _tokenIn,
@@ -134,14 +177,15 @@ contract Arbitrage {
         uint256 _amountIn,
         uint256 _amountOutMin
     ) external onlyOwner { 
-       IERC20(_tokenIn).approve(address(uniswapV3Router), _amountIn);
+       IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
+       IERC20(_tokenIn).approve(address(uniswapV3Router),  _amountIn);
 
         IUniswapV3Router.ExactInputSingleParams memory params = IUniswapV3Router
             .ExactInputSingleParams({
                 tokenIn: _tokenIn,
                 tokenOut: _tokenOut,
                 fee: 3000,     // 500, 3000, 10000
-                recipient: address(this),
+                recipient: msg.sender,
                 deadline: block.timestamp,
                 amountIn: _amountIn,
                 amountOutMinimum: _amountOutMin,
@@ -158,6 +202,7 @@ contract Arbitrage {
         uint256 _amountIn,
         uint256 _amountOutMin
     ) external onlyOwner {
+        IERC20(_tokenIn).transferFrom(msg.sender, address(this), _amountIn);
         // Approve the router to spend the tokenIn
         IERC20(_tokenIn).approve(address(sushiswapRouter), _amountIn);
 
@@ -171,7 +216,7 @@ contract Arbitrage {
             _amountIn,
             _amountOutMin,
             _path,
-            address(this),
+            msg.sender,
             block.timestamp + 600
         );
     }
