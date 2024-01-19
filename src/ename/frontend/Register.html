@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaMask Wallet Connection and EName Translator</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+</head>
+<body>
+    <h1>MetaMask Wallet Connection and EName Translator</h1>
+    <button id="connectButton">Connect to MetaMask</button>
+    <p id="connectionStatus">Not Connected</p>
+
+    <h2>EName to EAddress Translator</h2>
+    <label for="enameInput">Enter EName:</label>
+    <input type="text" id="enameInput">
+    <button onclick="translateToEAddress()">Translate to EAddress</button>
+    <p id="eaddressResult">EAddress will be displayed here</p>
+
+    <h2>EAddress to EName Translator</h2>
+    <label for="eaddressInput">Enter EAddress
+    <input type="text" id="eaddressInput" style="width: 350px;">
+    <button onclick="translateToEName()">Translate to EName</button>
+    <p id="enameResult">EName will be displayed here</p>
+
+    <h2>Register EName</h2>
+    <label for="registerENameInput">Enter EName to Register:</label>
+    <input type="text" id="registerENameInput">
+    <button onclick="registerEName()">Register EName</button>
+    <p id="registrationStatus"></p>
+
+
+    <script>
+        const contractAddress = "0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A";
+        let enameContract;
+        let isMetaMaskConnected = false;
+        let web3;
+        // Declare accounts globally
+        let accounts = [];
+
+        // Function to load contract ABI from a file
+        async function loadContractABI() {
+            try {
+                const response = await fetch('ENameABI.json'); // Replace with the correct path to your ABI file
+                const abi = await response.json();
+                return abi;
+            } catch (error) {
+                console.error("Error loading contract ABI:", error);
+                return null;
+            }
+        }
+
+        // Function to translate EName to EAddress
+        async function translateToEAddress() {
+                const ename = document.getElementById('enameInput').value;
+                try {
+                    if (enameContract) {
+                        const eaddress = await enameContract.methods.eaddress(ename).call();
+                        document.getElementById('eaddressResult').innerText = `EAddress: ${eaddress}`;
+                    } else {
+                        console.error('EName contract not initialized. Connect to MetaMask first.');
+                    }
+                } catch (error) {
+                    console.error(error);
+                    document.getElementById('eaddressResult').innerText = 'Error: EName not found';
+                }
+        }
+
+        // Function to translate EAddress to EName
+        async function translateToEName() {
+            const eaddress = document.getElementById('eaddressInput').value;
+            try {
+                if (enameContract) {
+                    const ename = await enameContract.methods.ename(eaddress).call();
+                    document.getElementById('enameResult').innerText = `EName: ${ename}`;
+                } else {
+                    console.error('EName contract not initialized. Connect to MetaMask first.');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('enameResult').innerText = 'Error: EAddress not found';
+            }
+        }
+
+        // Function to register a new EName
+        async function registerEName() {
+            const enameToRegister = document.getElementById('registerENameInput').value;
+
+            try {
+                if (enameContract && web3) {
+                    const registrationFee = web3.utils.toWei('0.1', 'ether'); // Convert fee to wei
+                    const registrationTransaction = await enameContract.methods.register(enameToRegister).send({
+                        from: accounts[0], // Use the connected MetaMask account
+                        value: registrationFee, // Send the registration fee with the transaction
+                    });
+
+                    if (registrationTransaction.status) {
+                        document.getElementById('registrationStatus').innerText = `EName "${enameToRegister}" registered successfully!`;
+                    } else {
+                        document.getElementById('registrationStatus').innerText = 'EName registration failed.';
+                    }
+                } else {
+                    console.error('EName contract not initialized or MetaMask not connected.');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('registrationStatus').innerText = 'Error during EName registration.';
+            }
+        }
+
+
+
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+            const connectButton = document.getElementById('connectButton');
+            const connectionStatus = document.getElementById('connectionStatus');
+    
+            // Function to handle the connection toggle
+            async function toggleConnection() {
+                if (!isMetaMaskConnected) {
+                    try {
+                        // Request MetaMask to connect
+                        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        isMetaMaskConnected = true;
+                        connectButton.innerText = 'Disconnect from MetaMask';
+                        connectionStatus.innerText = 'Connected';
+
+                        // Initialize Web3 and the contract
+                        web3 = new Web3(window.ethereum);   
+                        const contractABI = await loadContractABI();
+                        enameContract = new web3.eth.Contract(contractABI, contractAddress);
+
+                        // You can now access the user's wallet using web3 and interact with the contract
+                    } catch (error) {
+                        console.error(error);
+                    }
+                } else {
+                    try {
+                        // Request MetaMask to disconnect
+                        await window.ethereum.request({ method: 'eth_accounts' });
+                        isMetaMaskConnected = false;
+                        connectButton.innerText = 'Connect to MetaMask';
+                        connectionStatus.innerText = 'Not Connected';
+
+                        // Clear Web3 and contract instances
+                        web3 = null;
+                        enameContract = null;
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            }
+            // Add a click event listener to the connect button
+            connectButton.addEventListener('click', toggleConnection);
+        } else {
+            // MetaMask is not installed, display a message or handle accordingly
+            console.error('MetaMask is not installed');
+        }
+    </script>
+</body>
+</html>
