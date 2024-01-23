@@ -1,8 +1,8 @@
 # To install Ubuntu under Windows 10/11
-   https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/
+   1. https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/
 
 # download the ppswap project
-  git clone https://github.com/shiyonglu/ppswap.git
+  1. git clone https://github.com/shiyonglu/ppswap.git
 
 # To install foundry: 
 
