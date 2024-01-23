@@ -1,3 +1,6 @@
+# To install Ubuntu under Windows 10/11
+   https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/
+
 # To install foundry: 
 
 1. download foundryup:
