@@ -108,6 +108,7 @@ contract ArbitrageTest is Test{           // TokenB is a ERC4626 vault
         
         IERC20(WETH).transfer(address(arbitrage), amount);
 
+        vm.expectRevert(); // no profit so it will revert
         arbitrage.performArbitrageFromUniswapV2ToV3(WETH, token, amount, 0);
 
         arbitrage.retrieveTokens(WETH, IERC20(WETH).balanceOf(address(arbitrage)));
