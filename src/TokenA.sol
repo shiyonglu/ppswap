@@ -3,7 +3,7 @@
 // Polygonscan page: https://polygonscan.com/token/0xd03c5c70936b4f85e6b70e453d42c86d3a53f1cc
 
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 
 
 contract TokenA{
