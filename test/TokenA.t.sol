@@ -17,17 +17,17 @@ contract TokenATest is Test{
     }
    
     function testTotalSupply() public {
-        assertEq(tokenA.totalSupply(), 1_000_000_000);
+        assertEq(tokenA.totalSupply(), 1_000_000_000 ether);
     }
 
     function testTransfer() public {
-        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000);
+        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000 ether);
         tokenA.transfer(user1, 5000);
         assertEq(tokenA.balanceOf(user1), 5000);       
     }
 
     function testTransferFrom() public {
-        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000);
+        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000 ether);
         tokenA.transfer(user1, 5000);
         assertEq(tokenA.balanceOf(user1), 5000);     
 
@@ -43,7 +43,7 @@ contract TokenATest is Test{
     }
 
     function testAllowance() public {
-        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000);
+        assertEq(tokenA.balanceOf(address(this)), 1_000_000_000 ether);
         
      
         vm.prank(user2);
