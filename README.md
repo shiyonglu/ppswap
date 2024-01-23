@@ -2,7 +2,8 @@
    1. https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/
 
 # download the ppswap project
-  1. git clone https://github.com/shiyonglu/ppswap.git
+  1. install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git 
+  2. git clone https://github.com/shiyonglu/ppswap.git
 
 # To install foundry: 
 
