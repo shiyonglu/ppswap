@@ -10,7 +10,7 @@ contract TokenA{
     string public constant name = "TokenA";
     string public constant symbol = "AAA";
     uint8 public constant decimals = 18; // 18 decimals is the strongly suggested default, avoid changing it
-    uint public constant _totalSupply = 1_000_000_000; // one billion 
+    uint public constant _totalSupply = 1_000_000_000 ether; // one billion 
 
     address public contractOwner;
  
