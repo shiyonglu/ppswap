@@ -9,6 +9,10 @@
     foundryup
 3. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
 
+# To install the OpenZeppelin library
+1. Under the directory of ppswap, create a subdirectory lib: ``mkdir lib``
+2. Enter the lib directory, and copy the OpeenZeppelin lib there: ``git clone https://github.com/OpenZeppelin/openzeppelin-contracts.git``
+
 ## Let's learn how to use the command ``forge``
 
 1. create and init a project:
