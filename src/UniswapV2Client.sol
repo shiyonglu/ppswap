@@ -2,13 +2,41 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Router02.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 import "@uniswap/v2-periphery/contracts/interfaces/IERC20.sol";
 
+
+interface IUniswapV2Router {
+
+    function swapExactETHForTokens(
+        uint amountOutMin, 
+        address[] calldata path, 
+        address to, 
+        uint deadline
+    ) external payable returns (uint[] memory amounts);
+
+
+    function swapExactTokensForTokens(
+        uint256 amountIn, 
+        uint256 amountOutMin, 
+        address[] calldata path, 
+        address to, 
+        uint256 deadline
+    ) external returns (uint256[] memory amounts);
+
+    function swapTokensForExactTokens(
+        uint256 amountOut, 
+        uint256 amountInMax, 
+        address[] calldata path, 
+        address to, 
+        uint256 deadline
+    ) external returns (uint256[] memory amounts);
+
+}
+
 contract UniswapV2Interaction {
     address public owner;
-    IUniswapV2Router02 public uniswapRouter;
+    IUniswapV2Router public uniswapRouter;
     
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can call this function");
@@ -17,7 +45,7 @@ contract UniswapV2Interaction {
     
     constructor(address _routerAddress) {
         owner = msg.sender;
-        uniswapRouter = IUniswapV2Router02(_routerAddress);
+        uniswapRouter = IUniswapV2Router(_routerAddress);
     }
 
     // Swap tokens using Uniswap V2
