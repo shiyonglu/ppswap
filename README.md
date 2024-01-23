@@ -9,13 +9,15 @@
     foundryup
 3. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
 
-# To install OpenZeppelin, forge-std and the ds-test libraries
+# To install OpenZeppelin, forge-std and the ds-test and some other libraries
 1. cd ppswap
 2. mkdir lib
 3. cd lib
 4. git clone https://github.com/OpenZeppelin/openzeppelin-contracts.git
 5. git clone https://github.com/foundry-rs/forge-std.git
-6. git clone https://github.com/dapphub/ds-test.git 
+6. git clone https://github.com/dapphub/ds-test.git
+7. git clone https://github.com/Uniswap/v2-core.git
+8. git clone https://github.com/Uniswap/v2-periphery.git
 
 ## Let's learn how to use the command ``forge``
 
