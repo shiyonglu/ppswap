@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATAVIEW - Sending Love with MATIC</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+        #connectButton {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #sendLoveButton {
+            background-color: #ff007f; /* Pink color */
+            border: none;
+            border-radius: 50%;
+            padding: 15px 20px;
+            font-size: 24px;
+            color: #fff;
+            cursor: pointer;
+        }
+        #retrieveMessagesButton {
+            background-color: #ff007f; /* Pink color */
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <p class="navbar-brand" id="myename">DATAVIEW</p>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How It Works</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#why-choose-dataview">Why Choose DATAVIEW</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#get-started">Get Started</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <button id="connectButton">Connect to MetaMask</button>
+</header>
+
+<main>
+    <section id="hero" class="jumbotron jumbotron-fluid">
+        <div class="container text-center">
+            <h1 class="display-4">Sending Love with MATIC</h1>
+            <p class="lead">Nurture your relationships with DATAVIEW</p>
+            <a class="btn btn-primary btn-lg" href="#get-started" role="button">Get Started</a>
+        </div>
+    </section>
+
+    <section id="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <ol>
+                <li><strong>Register Your EName:</strong> The first step is to register your unique EName at <a href="http://www.myename.org" target="_blank">myename.org</a>. Your EName will serve as your identity within the DATAVIEW service.</li>
+                <li><strong>Connect Your Metamask Wallet:</strong> Once you have your EName, you can connect your Metamask wallet to DATAVIEW. This allows you to securely send and receive MATIC crypto.</li>
+                <li><strong>Send Love with MATIC:</strong> Choose a friend or loved one from your contacts and send them MATIC crypto with a personalized love message. It's as simple as that!</li>
+            </ol>
+        </div>
+    </section>
+
+    <section id="why-choose-dataview" class="bg-light py-5">
+        <div class="container">
+            <h2 class="text-center">Why Choose DATAVIEW?</h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Strengthen Friendships</h3>
+                    <p>DATAVIEW helps you nurture and strengthen your friendships and love relationships by providing a unique way to show your appreciation.</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Secure Transactions</h3>
+                    <p>Your transactions are protected through Metamask, ensuring the safety and security of your MATIC crypto.</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Express Yourself</h3>
+                    <p>Use our platform to craft heartfelt messages that convey your feelings. Show your love and appreciation in a meaningful way.</p>
+                </div>
+                <div class="col-md-6">
+                    <h3>Crypto Simplicity</h3>
+                    <p>Even if you're new to cryptocurrency, DATAVIEW makes it easy to send MATIC to your loved ones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="send-love-form">
+        <div class="container">
+            <h2 class="text-center">Send Love with MATIC</h2>
+            <p class="text-center">Already have an EName? Use the form below to send a message and MATIC crypto instantly. The message will stay on the blockchain forever! </p>
+            <form>
+		 <div class="form-group">
+    <label for="recipient">Recipient's EName</label>
+    <input type="text" class="form-control" id="recipient"  placeholder="Enter recipient's EName" required>
+    <p id="walletAddress"></p> <!-- Display wallet address here -->
+</div>
+
+                <div class="form-group">
+                    <label for="amount">Amount of MATIC</label>
+                    <input type="number" class="form-control" id="amount" placeholder="Enter the amount of MATIC" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Love Message</label>
+                    <textarea class="form-control" id="message" rows="4" placeholder="Compose your love message" required></textarea>
+                </div>
+                <button type="button" class="btn btn-primary" id="sendLoveButton" onclick="sendLove()">Send Love</button>
+            </form>
+        </div>
+    </section>
+    
+    <section id="get-started" class="bg-primary text-white py-5">
+        <div class="container text-center">
+            <h2>Get Started Today!</h2>
+            <p>Don't wait to show your love and friendship. Sign up at <a href="http://www.myename.org" target="_blank" class="text-white">myename.org</a> to register your EName, and then connect your MetaMask wallet to begin sending MATIC and heartwarming messages with DATAVIEW.</p>
+            <p>Let DATAVIEW be your bridge to stronger connections, deeper friendships, and more love in your life. Start today!</p>
+            <p>If you're an EName user, you can <button type="button" class="btn btn-primary" id="retrieveMessagesButton" onclick="retrieveMessages()">Retrieve my messages</button></p>
+        </div>
+    </section>
+
+<section id="recent-messages">
+    <div class="container">
+        <h2 class="text-center">Recent Messages</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Message ID</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Content</th>
+                    <th>MATIC Amount</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="messagesTableBody">
+                <!-- Messages will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+</section>
+
+</main>
+
+<footer class="bg-light text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 DATAVIEW. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<!-- Add Bootstrap and other dependencies here -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+<script src="EMessageABI.json"></script>
+<!-- ... (your HTML code) ... -->
+
+<script>
+    let contractAddressForEName = "0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A";
+    let contractAddressForEMessage = "0xE4C47C6A14689Bac0479AD4D5C84bAf7dE15d9b1";
+
+    let isMetaMaskConnected = false;
+    let web3;
+    let accounts = [];
+    let eNameContract;
+    let eMessageContract;
+    let recipientWalletAddress;
+    let myEnameInfo;
+    let myename;
+
+    async function loadContractABI(filename) {
+        try {
+            const response = await fetch(filename);
+            const abi = await response.json();
+            return abi;
+        } catch (error) {
+            console.error("Error loading contract ABI:", error);
+            return null;
+        }
+    }
+
+
+   
+    async function toggleConnection() {
+        if (!isMetaMaskConnected) {
+            try {
+                // Request MetaMask to connect
+                accounts = await window.ethereum.enable(); // Request user's permission
+                isMetaMaskConnected = true;
+                connectButton.innerText = 'Disconnect from MetaMask';
+
+                // Initialize Web3 and the contract
+                web3 = new Web3(window.ethereum);
+                const contractABIForEName = await loadContractABI('ENameABI.json');
+                eNameContract = new web3.eth.Contract(contractABIForEName, contractAddressForEName);
+                const contractABIForEMessage = await loadContractABI('EMessageABI.json');
+                eMessageContract = new web3.eth.Contract(contractABIForEMessage, contractAddressForEMessage);
+         
+                // Check if the recipient's EName exists and get their wallet address
+                myename = await eNameContract.methods.ename(accounts[0]).call();
+             
+                if(myename)
+                     myEnameInfo.innerText = myename + ': ' + accounts[0];
+	        else
+                     myEnameInfo.innerText = accounts[0];
+
+
+                // You can now access the user's wallet using web3 and interact with the contract
+            } catch (error) {
+                console.error(error);
+            }
+        } else {
+            try {
+                // Request MetaMask to disconnect
+                await window.ethereum.request({ method: 'eth_accounts' });
+                isMetaMaskConnected = false;
+                connectButton.innerText = 'Connect to MetaMask';
+        
+                // Clear Web3 and contract instances
+                myEnameInfo.innerText = 'DATAVIEW'
+                web3 = null;
+                eNameContract = null;
+                eMessageContract = null;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
+     // Check if MetaMask is installed
+    if (typeof window.ethereum !== 'undefined') {
+            const connectButton = document.getElementById('connectButton');
+            myEnameInfo = document.getElementById('myename');
+        
+            // Add a click event listener to the button
+            connectButton.addEventListener('click', toggleConnection);
+    } else {
+            // MetaMask is not installed, display a message or handle accordingly
+            console.error('MetaMask is not installed');
+    }
+
+    async function sendLove() {
+        const recipientENameInput = document.getElementById('recipient').value
+        const recipientEName = recipientENameInput.toLowerCase();
+        const walletAddressParagraph = document.getElementById('walletAddress');
+
+        // Check if the recipient's EName exists and get their wallet address
+        recipientWalletAddress = await eNameContract.methods.eaddress(recipientEName).call();
+
+        // Check if the recipient's wallet address is valid (not address zero)
+        if (recipientWalletAddress === '0x0000000000000000000000000000000000000000') {
+            walletAddressParagraph.textContent = "Recipient's EName does not exist.";
+        } else {
+            walletAddressParagraph.textContent = `Recipient's Wallet Address: ${recipientWalletAddress}`;
+        }
+
+        // Get the amount of MATIC from the input field
+        const maticAmount = document.getElementById('amount').value;
+
+        // Get the love message from the input field
+        const loveMessage = document.getElementById('message').value;
+
+        // Create a transaction object
+        const transactionObject = {
+            from: accounts[0], // Sender's address
+            to: contractAddressForEMessage, // EMessage contract address
+            gas: 5000000, // Gas limit (adjust as needed), we comment it out so that Metamsk can estimate the gas limit
+            value: web3.utils.toWei(maticAmount, 'ether'), // Convert MATIC to wei
+            data: eMessageContract.methods.sendEMessage(recipientWalletAddress, loveMessage, web3.utils.toWei(maticAmount, 'ether')).encodeABI()
+        };
+
+        try {
+            // Send the transaction
+            const receipt = await web3.eth.sendTransaction(transactionObject);
+
+            // Transaction successful, you can handle the success here
+            console.log('Transaction successful:', receipt);
+
+            // Clear the input fields
+            document.getElementById('recipient').value = '';
+            document.getElementById('amount').value = '';
+            document.getElementById('message').value = '';
+
+            // Display a success message to the user
+            alert('Love sent successfully!');
+        } catch (error) {
+            // Transaction failed, handle the error
+            console.error('Transaction failed:', error);
+
+            // Display an error message to the user
+            alert('Failed to send love. Please check your input and try again.');
+        }
+    }
+    async function retrieveMessages() {
+    // Check if the user is connected
+    if (!isMetaMaskConnected) {
+        alert("Please connect to MetaMask first.");
+        return;
+    }
+
+    // Get the message IDs for the user (both sent and received)
+    const sentMessageIds = await eMessageContract.methods.getOutgoingMessageIds(accounts[0], 0, 10).call();
+    const receivedMessageIds = await eMessageContract.methods.getIncomingMessageIds(accounts[0], 0, 10).call();
+
+    // Combine and sort the message IDs to get the most recent 10 messages
+    const allMessageIds = sentMessageIds.concat(receivedMessageIds).sort().slice(-10);
+
+    // Fetch message details and display them in the table
+    const messagesTableBody = document.getElementById('messagesTableBody');
+    messagesTableBody.innerHTML = ''; // Clear existing entries
+
+    for (const messageId of allMessageIds) {
+        const message = await eMessageContract.methods.messages(messageId).call();
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${messageId}</td>
+            <td>${message.sender}</td>
+            <td>${message.receiver}</td>
+            <td>${message.content}</td>
+            <td>${web3.utils.fromWei(message.maticAmount, 'ether')} MATIC</td>
+            <td>${new Date(message.timestamp * 1000).toLocaleString()}</td>
+        `;
+        messagesTableBody.appendChild(row);
+    }
+}
+
+</script>
+</body>
+</html>
