@@ -19,8 +19,10 @@ contract MyFirstTest is Test {
         
     }
 
-    function testFirstTest() public view {
+    function testFirstTest() public {
        console2.log("Congratulations, you first test passed!");
+
+       assertEq(owner, makeAddr("owner"));
 
     }
 
