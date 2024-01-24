@@ -7,5 +7,5 @@
 6.  Now you should be able to access the index webpage of http://a.b.c.d
 7. Replace the default index page ``/var/www/html/index.html`` by the frontend index.html, everything should work from there.
 8. Use chatgpt 3.5 to generate a defaut page as a start, which you can improve manually with help from chatgpt.
-9. If you like to support ssl, go to: https://www.zerossl.com/ and start with a FREE SSL certificate for 60 months. Make sure: 1) the certificates are in the a diretory and should be readable ONLY by the web serer (tomcat); 2) the right port 8443/443 is used and opened in AWS security group; 3) shutdown and restart the the web server; 4) It might take a while to take effect.
+9. If you like to support ssl, go to: https://www.zerossl.com/ and start with a FREE SSL certificate for days. Make sure: 1) the certificates are in the a diretory and should be readable ONLY by the web serer (tomcat); 2) the right port 8443/443 is used and opened in AWS security group; 3) shutdown and restart the the web server; 4) It might take a while to take effect.
    
