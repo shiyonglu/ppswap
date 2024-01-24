@@ -1,5 +1,5 @@
 # To install Ubuntu under Windows 10/11
-   1. https://canonical-ubuntu-wsl.readthedocs-hosted.com/en/latest/
+   1. https://learn.microsoft.com/en-us/windows/wsl/install
 
 # download the ppswap project
   1. install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git 
