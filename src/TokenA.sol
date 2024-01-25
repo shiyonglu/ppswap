@@ -3,14 +3,14 @@
 // Polygonscan page: https://polygonscan.com/token/0xd03c5c70936b4f85e6b70e453d42c86d3a53f1cc
 
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.23;
 
 
 contract TokenA{
     string public constant name = "TokenA";
     string public constant symbol = "AAA";
     uint8 public constant decimals = 18; // 18 decimals is the strongly suggested default, avoid changing it
-    uint public constant _totalSupply = 1_000_000_000 ether; // one billion 
+    uint public constant _totalSupply = 1_000_000_000 * 1e18; // one billion 
 
     address public contractOwner;
  
@@ -23,7 +23,7 @@ contract TokenA{
    
    constructor() { 
         contractOwner = msg.sender;
-        balances[msg.sender] = _totalSupply; // The trustAccount has all PPS initially 
+        balances[msg.sender] = _totalSupply; // The trustAccount has all tokens initially 
         emit Transfer(address(0), msg.sender, _totalSupply);
    }
     
