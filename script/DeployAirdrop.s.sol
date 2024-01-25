@@ -6,7 +6,8 @@
  *     forge script script/DeployAirdrop.s.sol:DeployAirdropScript --rpc-url $POLYGON_RPC_URL --broadcast --verify src/airdrop/backend/Airdrop.sol:Airdrop --etherscan-api-key $POLYSCAN_API_KEY
  *  3. Verify: 
  *      forge verify-contract --verifier-url https://api.polygonscan.com/api/ <contract_address> src/airdrop/backend/Airdrop.sol:Airdrop --etherscan-api-key $POLYSCAN_API_KEY
- * 
+ *  
+ * Deployed at Polygon: https://polygonscan.com/address/0x7176d4c8bbA3fBb04424aD7e65E4D6f1D1199db9#code
  *
  */
 
