@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 contract EMessage {
-    address public owner;
     uint256 public messageCount;
 
     struct MessageInfo {
@@ -17,34 +16,10 @@ contract EMessage {
     mapping(address => uint256[]) public outgoingMessageIds;
     mapping(address => uint256[]) public incomingMessageIds;
 
-    event MessageSent(
-        uint256 indexed messageId,
-        address indexed sender,
-        address indexed receiver,
-        string content,
-        uint256 maticAmount,
-        uint256 timestamp
-    );
 
-    constructor() {
-        owner = msg.sender;
-        messageCount = 0;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the contract owner can perform this operation");
-        _;
-    }
-
-    receive() external payable {
-        // Allow the contract to receive MATIC.
-    }
-
-    function sendEMessage(address _receiver, string memory _content, uint256 _maticAmount) external {
-        require(msg.sender != _receiver, "You cannot send a message to yourself");
-        require(_receiver != address(0), "Receiver address cannot be zero address");
-        require(_maticAmount > 0, "You must send MATIC along with the message");
-        
+    function sendEMessage(address _receiver, string memory _content, uint256 _maticAmount) payable external {
+        require(_maticAmount == msg.value, "MATIC amount does not match");
+    
         messageCount++;
 
         messages[messageCount] = MessageInfo({
@@ -62,10 +37,18 @@ contract EMessage {
         incomingMessageIds[_receiver].push(messageCount);
 
         // Send MATIC directly to the receiver.
-        payable(_receiver).transfer(_maticAmount);
-
-        emit MessageSent(messageCount, msg.sender, _receiver, _content, _maticAmount, block.timestamp);
+        (bool success, ) = _receiver.call{value: _maticAmount}("");
+        require(success);
     }
+
+    function getOutgoingMessageCount(address _user) external view returns (uint256) {
+             return outgoingMessageIds[_user].length;
+    }
+
+    function getIncomingMessageCount(address _user) external view returns (uint256) {
+             return incomingMessageIds[_user].length;
+    }
+
 
     function getOutgoingMessageIds(address _user, uint256 _start, uint256 _numOfMessages) external view returns (uint256[] memory) {
         uint256[] memory userOutgoingMessages = outgoingMessageIds[_user];
@@ -89,11 +72,5 @@ contract EMessage {
         }
 
         return result;
-    }
-
-    function withdrawMATIC() external onlyOwner {
-        uint256 balanceToWithdraw = address(this).balance;
-        require(balanceToWithdraw > 0, "No MATIC balance to withdraw");
-        payable(owner).transfer(balanceToWithdraw);
     }
 }
