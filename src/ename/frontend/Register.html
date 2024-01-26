@@ -67,23 +67,27 @@
         <section class="hero">
         </section>
         <section class="translator">
-            <h2>EName to wallet address translation</h2>
+            <h2>1. Register EName</h2>
+            <label for="registerENameInput">Enter EName to Register:</label>
+            <input type="text" id="registerENameInput" placeholder="such as mike.e">
+            <button onclick="registerEName()">Register EName</button>
+            <p id="registrationStatus"></p>
+            <br><br> 
+
+            <h2>2. EName to wallet address translation</h2>
             <label for="enameInput">Enter EName:</label>
-            <input type="text" id="enameInput">
+            <input type="text" id="enameInput" placeholder="such as mike.e">
             <button onclick="translateToEAddress()">Translate to wallet address</button>
             <p id="eaddressResult">EAddress will be displayed here</p>
+            <br><br> 
 
-            <h2>Wallete address to EName translation</h2>
+
+            <h2>3. Wallete address to EName translation</h2>
             <label for="eaddressInputLabel">Enter wallet address:</label>
             <input type="text" id="eaddressInput" style="width: 320px;">
             <button onclick="translateToEName()">Translate to EName</button>
             <p id="enameResult">EName will be displayed here</p>
 
-            <h2>Register EName</h2>
-            <label for="registerENameInput">Enter EName to Register:</label>
-            <input type="text" id="registerENameInput">
-            <button onclick="registerEName()">Register EName</button>
-            <p id="registrationStatus"></p>
         </section>
     </main>
     <footer>
