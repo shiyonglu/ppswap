@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure crypto payment at ease between ENamers</title>
+<style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        button#connectButton {
+            background-color: #4CAF50; /* Green background color */
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .hero h1 {
+            font-size: 36px;
+        }
+        .translator h2 {
+            margin-top: 20px;
+        }
+        /* Add more styles as needed */
+        footer {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 20px 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <p id="myename">Airdrop - reward early birds in your community </p> <!-- Updated company name -->
+            <button id="connectButton">Connect to MetaMask</button>
+        </nav>
+    </header>
+    <main>
+        <section class="sponsor">
+    <h2>Send payments to list of recepients</h2>
+    <label for="erc20TokenAddress">ERC20 Token Address:</label><br>
+    <input type="text" id="erc20TokenAddress" size=50 height=50> (for example <a href="https://polygonscan.com/token/0xC9E5DE3CF795c8B4AC84BA09c99Ba1fD6C9e9C34#code">datagold)</a><br><br>
+    <label for="amount">Amount to Send:</label><br>
+    <input type="text" id="amount"><br><br>
+
+    <label>Step 1: approve the total amount:  </label>
+    <button onclick="approveTokens()">Approve</button><br><br><br>
+    
+
+    <label for="recipientList">Recipient Addresses (comma-separated):</label><br>
+    <textarea id="recipientList" rows="30" cols="100"></textarea><br>
+
+    <br>
+    <label> Step 2: Submit the payment:  </label> 
+    <button onclick="sendTokens()">Send tokens</button><br><br>
+    <p id="paymentStatus"></p><br>
+</section>
+
+        <!-- ... Other sections ... -->
+    </main>
+    <footer>
+        &copy; 2024 Payment. All rights reserved.
+    </footer>
+
+    <script>
+        // Add your JavaScript code here
+        const enameContractAddress = "0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A";
+        let enameContract;
+        const paymentContractAddress = "0xc20118d2Aaa7D467EDF7131C5E2c38D087D8740E";
+        let paymentContract;
+        let isMetaMaskConnected = false;
+        let web3;
+        let accounts = [];
+        const slogan = 'Payment - send payments securely to list of users at ease ';
+        let myenameElement = document.getElementById('myename');
+        let myename;
+
+
+        document.getElementById('myename').innerText = slogan;
+
+        // Function to load contract ABI from a file
+        async function loadContractABI(abiFile) {
+            try {
+                const response = await fetch(abiFile); // Replace with the correct path to your ABI file
+                const abi = await response.json();
+                return abi;
+            } catch (error) {
+                console.error("Error loading contract ABI:", error);
+                return null;
+            }
+        }
+
+        // Function to approve the Airdrop contract as a spender
+async function approveTokens() {
+    const erc20TokenAddress = document.getElementById('erc20TokenAddress').value;
+    const amount = document.getElementById('amount').value;
+
+    try {
+        if (web3 && accounts.length > 0) {
+            // Load the ERC20 token contract ABI and create an instance
+            const erc20TokenABI = await loadContractABI('ERC20TokenABI.json'); // Replace with the actual ABI file
+            const erc20TokenContract = new web3.eth.Contract(erc20TokenABI, erc20TokenAddress);
+
+            const decimals  = await erc20TokenContract.methods.decimals().call();
+            // Convert the amount to the appropriate format based on the token's decimals
+            const amountInTokenUnit = web3.utils.toBN(amount).mul(web3.utils.toBN(10).pow(web3.utils.toBN(decimals)));
+
+            // Approve the Airdrop contract as a spender
+            const approvalTransaction = await erc20TokenContract.methods.approve(
+                paymentContractAddress, 
+                amountInTokenUnit
+            ).send({
+                from: accounts[0],
+                value: 0
+            });
+
+            if (approvalTransaction.status) {
+                document.getElementById('paymentStatus').innerText = 'Approval successful!';
+            } else {
+                document.getElementById('paymentStatus').innerText = 'Approval failed.';
+            }
+        } else {
+            console.error('MetaMask not connected or accounts not available.');
+        }
+    } catch (error) {
+        console.error(error);
+        document.getElementById('paymentStatus').innerText = 'Error during approval.';
+    }
+}
+
+
+        // Function to send tokens 
+        async function sendTokens() {
+            const erc20TokenAddress = document.getElementById('erc20TokenAddress').value;
+            const amount = document.getElementById('amount').value;
+            const recipientList = document.getElementById('recipientList').value.replace(/ /g, "").split(",");
+
+            const erc20TokenABI = await loadContractABI('ERC20TokenABI.json'); // Replace with the actual ABI file
+            const erc20TokenContract = new web3.eth.Contract(erc20TokenABI, erc20TokenAddress);
+            const decimals  = await erc20TokenContract.methods.decimals().call();
+
+            // Convert the amount to the appropriate format based on the token's decimals
+            const amountInTokenUnit = web3.utils.toBN(amount).mul(web3.utils.toBN(10).pow(web3.utils.toBN(decimals)));
+
+            try {
+                if (paymentContract && web3) {
+                    const sponsorTransaction = await paymentContract.methods.sendTokens(
+                        erc20TokenAddress,
+                        recipientList,
+                        amountInTokenUnit
+                    ).send({
+                        from: accounts[0],
+                        gas: 5000000,
+                        value: 0
+                    });
+
+                    if (sponsorTransaction.status) {
+                        document.getElementById('paymentStatus').innerText = 'Payment is performed successfully!';
+                    } else {
+                        document.getElementById('paymentStatus').innerText = 'Payment failed.';
+                    }
+                } else {
+                    console.error('Airdrop contract not initialized or MetaMask not connected.');
+                }
+            } catch (error) {
+                console.error(error);
+                document.getElementById('paymentStatus').innerText = 'Error during payment.';
+            }
+        }
+
+        // Check if MetaMask is installed
+        if (typeof window.ethereum !== 'undefined') {
+            const connectButton = document.getElementById('connectButton');
+
+            // Function to handle the connection toggle
+            async function toggleConnection() {
+                if (!isMetaMaskConnected) {
+                    try {
+                        // Request MetaMask to connect
+                        accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        isMetaMaskConnected = true;
+                        connectButton.innerText = 'Disconnect from MetaMask';
+
+                        // Initialize Web3 and the contract
+                        web3 = new Web3(window.ethereum);
+                        const enameContractABI = await loadContractABI('ENameABI.json');
+                        enameContract = new web3.eth.Contract(enameContractABI, enameContractAddress);
+
+                        const paymentContractABI = await loadContractABI('PaymentABI.json');
+                        paymentContract = new web3.eth.Contract(paymentContractABI, paymentContractAddress);
+
+                        // Check if the recipient's EName exists and get their wallet address
+                        myename = await enameContract.methods.ename(accounts[0]).call();
+
+                        if (myename) {
+                            myenameElement.innerText = myename + ': ' + accounts[0];
+                        } else {
+                            myenameElement.innerText = accounts[0];
+                        }
+
+                        // You can now access the user's wallet using web3 and interact with the contract
+                    } catch (error) {
+                        console.error(error);
+                    }
+                } else {
+                    try {
+                        // Request MetaMask to disconnect
+                        await window.ethereum.request({ method: 'eth_accounts' });
+                        isMetaMaskConnected = false;
+                        connectButton.innerText = 'Connect to MetaMask';
+                        myenameElement.innerText = slogan;
+
+                        // Clear Web3 and contract instances
+                        web3 = null;
+                        paymentContract = null;
+                    } catch (error) {
+                        console.error(error);
+                    }
+                }
+            }
+            // Add a click event listener to the connect button
+            connectButton.addEventListener('click', toggleConnection);
+        } else {
+            // MetaMask is not installed, display a message or handle accordingly
+            console.error('MetaMask is not installed');
+        }
+    </script>
+</body>
+</html>
