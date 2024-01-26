@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,19 +65,19 @@
         </nav>
     </header>
     <main>
-        <section class="sponsor">
+        <section class="payment">
     <h2>Send payments to list of recepients</h2>
     <label for="erc20TokenAddress">ERC20 Token Address:</label><br>
     <input type="text" id="erc20TokenAddress" size=50 height=50> (for example <a href="https://polygonscan.com/token/0xC9E5DE3CF795c8B4AC84BA09c99Ba1fD6C9e9C34#code">datagold)</a><br><br>
-    <label for="amount">Amount to Send:</label><br>
+    <label for="amount">Total amount to send:</label><br>
     <input type="text" id="amount"><br><br>
 
     <label>Step 1: approve the total amount:  </label>
     <button onclick="approveTokens()">Approve</button><br><br><br>
     
 
-    <label for="recipientList">Recipient Addresses (comma-separated):</label><br>
-    <textarea id="recipientList" rows="30" cols="100"></textarea><br>
+    <label for="recipientList">Recipient enames (comma-separated) (each recipient will receive equal share of the total:</label><br>
+    <textarea id="recipientList" rows="30" cols="100" placeholder="datagold.e, ename.e"></textarea><br>
 
     <br>
     <label> Step 2: Submit the payment:  </label> 
@@ -93,9 +94,9 @@
     <script>
         // Add your JavaScript code here
         const enameContractAddress = "0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A";
-        let enameContract;
-        const paymentContractAddress = "0xc20118d2Aaa7D467EDF7131C5E2c38D087D8740E";
-        let paymentContract;
+	let enameContract;
+	const paymentContractAddress = "0xc20118d2Aaa7D467EDF7131C5E2c38D087D8740E";
+	let paymentContract;
         let isMetaMaskConnected = false;
         let web3;
         let accounts = [];
@@ -104,7 +105,7 @@
         let myename;
 
 
-        document.getElementById('myename').innerText = slogan;
+        myenameElement.innerText = slogan;
 
         // Function to load contract ABI from a file
         async function loadContractABI(abiFile) {
@@ -118,7 +119,7 @@
             }
         }
 
-        // Function to approve the Airdrop contract as a spender
+	// Function to approve the Airdrop contract as a spender
 async function approveTokens() {
     const erc20TokenAddress = document.getElementById('erc20TokenAddress').value;
     const amount = document.getElementById('amount').value;
@@ -130,7 +131,7 @@ async function approveTokens() {
             const erc20TokenContract = new web3.eth.Contract(erc20TokenABI, erc20TokenAddress);
 
             const decimals  = await erc20TokenContract.methods.decimals().call();
-            // Convert the amount to the appropriate format based on the token's decimals
+	    // Convert the amount to the appropriate format based on the token's decimals
             const amountInTokenUnit = web3.utils.toBN(amount).mul(web3.utils.toBN(10).pow(web3.utils.toBN(decimals)));
 
             // Approve the Airdrop contract as a spender
@@ -155,19 +156,36 @@ async function approveTokens() {
         document.getElementById('paymentStatus').innerText = 'Error during approval.';
     }
 }
-
+        function isZeroAddress(address) {
+            return address === '0x0000000000000000000000000000000000000000';
+        }
 
         // Function to send tokens 
         async function sendTokens() {
             const erc20TokenAddress = document.getElementById('erc20TokenAddress').value;
             const amount = document.getElementById('amount').value;
-            const recipientList = document.getElementById('recipientList').value.replace(/ /g, "").split(",");
+            const enameList = document.getElementById('recipientList').value.replace(/ /g, "").split(",");
+            const recipientList  = [];
+            for (const e of enameList) {
+                try {
+                    const addr = await enameContract.methods.eaddress(e).call();
+                    if (isZeroAddress(addr)) {
+                        alert(`EName ${e} is invalid or does not exist. Aborting transaction.`);
+                        return;
+                    }
+                    recipientList.push(addr);
+                } catch (error) {
+                    alert(`Error resolving EName ${e}: ${error.message}. Aborting transaction.`);
+                    return;
+                }
+            } 
+            
 
             const erc20TokenABI = await loadContractABI('ERC20TokenABI.json'); // Replace with the actual ABI file
             const erc20TokenContract = new web3.eth.Contract(erc20TokenABI, erc20TokenAddress);
             const decimals  = await erc20TokenContract.methods.decimals().call();
 
-            // Convert the amount to the appropriate format based on the token's decimals
+	    // Convert the amount to the appropriate format based on the token's decimals
             const amountInTokenUnit = web3.utils.toBN(amount).mul(web3.utils.toBN(10).pow(web3.utils.toBN(decimals)));
 
             try {
@@ -178,7 +196,6 @@ async function approveTokens() {
                         amountInTokenUnit
                     ).send({
                         from: accounts[0],
-                        gas: 5000000,
                         value: 0
                     });
 
@@ -214,8 +231,8 @@ async function approveTokens() {
                         const enameContractABI = await loadContractABI('ENameABI.json');
                         enameContract = new web3.eth.Contract(enameContractABI, enameContractAddress);
 
-                        const paymentContractABI = await loadContractABI('PaymentABI.json');
-                        paymentContract = new web3.eth.Contract(paymentContractABI, paymentContractAddress);
+			const paymentContractABI = await loadContractABI('PaymentABI.json');
+		        paymentContract = new web3.eth.Contract(paymentContractABI, paymentContractAddress);
 
                         // Check if the recipient's EName exists and get their wallet address
                         myename = await enameContract.methods.ename(accounts[0]).call();
@@ -255,3 +272,4 @@ async function approveTokens() {
     </script>
 </body>
 </html>
+
