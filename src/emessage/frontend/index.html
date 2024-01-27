@@ -184,7 +184,7 @@
 
 <script>
     let contractAddressForEName = "0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A";
-    let contractAddressForEMessage = "0xE4C47C6A14689Bac0479AD4D5C84bAf7dE15d9b1";
+    let contractAddressForEMessage = "0x6e525207C3b5EAD9328Aac95dAC961ED63A35D8e";
 
     let isMetaMaskConnected = false;
     let web3;
@@ -291,7 +291,7 @@
         const transactionObject = {
             from: accounts[0], // Sender's address
             to: contractAddressForEMessage, // EMessage contract address
-            gas: 5000000, // Gas limit (adjust as needed), we comment it out so that Metamsk can estimate the gas limit
+            // gas: 5000000, // Gas limit (adjust as needed), we comment it out so that Metamsk can estimate the gas limit
             value: web3.utils.toWei(maticAmount, 'ether'), // Convert MATIC to wei
             data: eMessageContract.methods.sendEMessage(recipientWalletAddress, loveMessage, web3.utils.toWei(maticAmount, 'ether')).encodeABI()
         };
@@ -326,11 +326,23 @@
     }
 
     // Get the message IDs for the user (both sent and received)
-    const sentMessageIds = await eMessageContract.methods.getOutgoingMessageIds(accounts[0], 0, 10).call();
-    const receivedMessageIds = await eMessageContract.methods.getIncomingMessageIds(accounts[0], 0, 10).call();
+    const sentMessageCount = await eMessageContract.methods.getOutgoingMessageCount(accounts[0]).call();
+    const receiveMessageCount = await eMessageContract.methods.getIncomingMessageCount(accounts[0]).call();
+    let sendMessageIds; 
+    let receiveMessageIds;
+
+    if(sentMessageCount < 10)
+        sentMessageIds = await eMessageContract.methods.getOutgoingMessageIds(accounts[0], 0, 10).call();
+    else 
+        sentMessageIds = await eMessageContract.methods.getOutgoingMessageIds(accounts[0], sendMessageCount - 10, 10).call();
+
+    if(receiveMessageCount < 10)		    
+        receivedMessageIds = await eMessageContract.methods.getIncomingMessageIds(accounts[0], 0, 10).call();
+    else
+        receivedMessageIds = await eMessageContract.methods.getIncomingMessageIds(accounts[0], receiveMessageCount - 10, 10).call();
 
     // Combine and sort the message IDs to get the most recent 10 messages
-    const allMessageIds = sentMessageIds.concat(receivedMessageIds).sort().slice(-10);
+    const allMessageIds = sentMessageIds.concat(receivedMessageIds).sort();
 
     // Fetch message details and display them in the table
     const messagesTableBody = document.getElementById('messagesTableBody');
@@ -338,12 +350,14 @@
 
     for (const messageId of allMessageIds) {
         const message = await eMessageContract.methods.messages(messageId).call();
+        const sender = await eNameContract.methods.ename(message.sender).call();
+        const receiver = await eNameContract.methods.ename(message.receiver).call();
 
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${messageId}</td>
-            <td>${message.sender}</td>
-            <td>${message.receiver}</td>
+            <td>${sender}</td>
+            <td>${receiver}</td>
             <td>${message.content}</td>
             <td>${web3.utils.fromWei(message.maticAmount, 'ether')} MATIC</td>
             <td>${new Date(message.timestamp * 1000).toLocaleString()}</td>
