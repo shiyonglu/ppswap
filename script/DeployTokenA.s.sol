@@ -11,7 +11,7 @@
  *     forge script script/DeployTokenA.s.sol:DeployTokenAScript --rpc-url $POLYGON_RPC_URL --broadcast
  *  
  *  4. deploy and verify the contract
- *      forge script script/DeployTokenA.s.sol:DeployTokenAScript --rpc-url $POLYGON_RPC_URL --broadcast --verify --etherscan-api-key $POLYSCAN_API_KEY
+ *      forge script script/DeployTokenA.s.sol:DeployTokenAScript --rpc-url $POLYGON_RPC_URL --broadcast --verify src/TokenA.sol:TokenA -etherscan-api-key $POLYSCAN_API_KEY
  *   
  *  5. Just verify after deployment: 
  *     forge verify-contract --verifier-url https://api.polygonscan.com/api/ 0x4663948dad67359c767662DF8D7F79136e8361dA src/TokenA.sol:TokenA --etherscan-api-key $POLYSCAN_API_KEY
