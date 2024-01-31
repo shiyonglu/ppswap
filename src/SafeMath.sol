@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0
-pragma solidity 0.8.17;
+pragma solidity ^0.8.17;
 
 contract SafeMath {
     function safeAdd(uint256 a, uint256 b) public pure returns (uint256 c) {
