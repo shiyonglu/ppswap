@@ -9,6 +9,7 @@
  * 
  *  3. deploy in real 
  *     forge script script/DeployTokenA.s.sol:DeployTokenAScript --rpc-url $POLYGON_RPC_URL --broadcast
+ *     for example: forge script script/DeployTokenA.s.sol --rpc-url https://polygon-rpc.com --broadcast
  *  
  *  4. deploy and verify the contract
  *      forge script script/DeployTokenA.s.sol:DeployTokenAScript --rpc-url $POLYGON_RPC_URL --broadcast --verify src/TokenA.sol:TokenA -etherscan-api-key $POLYSCAN_API_KEY
