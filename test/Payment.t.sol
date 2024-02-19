@@ -5,12 +5,14 @@ pragma solidity ^0.8.17;
 import "forge-std/Test.sol";
 import "../src/TokenA.sol";
 import "../src/payment/backend/Payment.sol";
+import "../src/payment/backend/SendETH.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
 
 contract AirdropTest is Test{
     Payment payment;
+    SendETH sendETH;
     TokenA tokenA;
 
     address sponsor1 = makeAddr("sponsor1");
@@ -26,12 +28,13 @@ contract AirdropTest is Test{
        vm.createSelectFork(vm.rpcUrl("https://polygon-mainnet.g.alchemy.com/v2/kG1HifS-s10GWNUIhkZIwTmIZqe2tbD1"));
 
        payment = new Payment();
+       sendETH = new SendETH();
        tokenA = new TokenA();
        deal(address(tokenA), sponsor1, 1000 ether);
        deal(address(tokenA), sponsor2, 1000 ether);
 
-       deal(sponsor1, 10 ether);
-       deal(sponsor2, 10 ether);
+       deal(sponsor1, 20 ether);
+       deal(sponsor2, 20 ether);
     }
    
     function testPayment() public {
@@ -60,5 +63,38 @@ contract AirdropTest is Test{
         console2.log("balance of user1: ", tokenA.balanceOf(user1));
     }
 
+    function testSendETH() public{
+        address[] memory userList = new address[](3);
+        userList[0] =  user1;
+        userList[1] = user2;
+        userList[2] = user3;
+        uint256[] memory amounts= new uint256[](3);
+        amounts[0] = 1 ether;
+        amounts[1] = 2 ether;
+        amounts[2] = 3 ether;
+
+        vm.expectRevert("Failure in sending ETH"); // not sufficient ETH
+        sendETH.batchSend{value: 3 ether}(userList, amounts);
+
+        console2.log("ETH baalance", sponsor1.balance);
+        vm.prank(sponsor1);
+        sendETH.batchSend{value: 6 ether}(userList, amounts);
+        console2.log("ETH baalance", sponsor1.balance);
+        console2.log("user1 ETH baalance", user1.balance);
+        console2.log("user2 ETH baalance", user2.balance);
+        console2.log("user 3ETH baalance", user3.balance);
+
+        console2.log("ETH baalance", sponsor1.balance);
+        vm.prank(sponsor1);
+        sendETH.batchSend{value: 10 ether}(userList, amounts);
+        console2.log("ETH baalance", sponsor1.balance);
+        console2.log("user1 ETH baalance", user1.balance);
+        console2.log("user2 ETH baalance", user2.balance);
+        console2.log("user 3ETH baalance", user3.balance);
+
+        vm.prank(sponsor1);
+        (bool success, ) = address(sendETH).call{value: 1 ether}("");
+        assertFalse(success);
+    }
 
 }
