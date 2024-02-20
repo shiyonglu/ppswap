@@ -1,3 +1,7 @@
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.23;
+
 contract GasHelpers {
     string private checkpointLabel;
     uint256 private checkpointGasLeft = 1; // Start the slot warm.
