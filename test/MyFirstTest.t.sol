@@ -26,4 +26,13 @@ contract MyFirstTest is Test {
 
     }
 
+    function signMsgHash(bytes32 MsgHash, uint256 userPk) internal view returns (uint8 v, bytes32 r, bytes32 s)
+    {
+        // uint256 userPk = 0x12341234;
+        // address user = vm.addr(userPk);
+
+       return vm.sign(userPk, MsgHash);
+    }
+
+
 }
