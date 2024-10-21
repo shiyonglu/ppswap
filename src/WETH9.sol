@@ -12,7 +12,7 @@ contract WETH9 is ERC20 {
     constructor() ERC20("Wrapped Ether", "WETH") {}
 
     // Allows users to deposit Ether and mint WETH
-    function deposit() external payable {
+    function deposit() public payable {
         // Mint WETH to the sender's account based on the ether sent
         _mint(msg.sender, msg.value);
         emit Deposit(msg.sender, msg.value);
