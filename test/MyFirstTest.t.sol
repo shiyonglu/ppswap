@@ -14,6 +14,7 @@ contract MyFirstTest is Test {
 
     function setUp() public {
         // need to fork
+        // vm.createSelectFork(vm.envString("ETH_RPC_URL"), 21061460);  // fork this block of ETH, 10/27/2024, where ETH_RPC_URL is the environment variable name
         // vm.createSelectFork(vm.rpcUrl("https://polygon-mainnet.g.alchemy.com/v2/kG1HifS-s10GWNUIhkZIwTmIZqe2tbD1"));
         // vm.createSelectFork(vm.rpcUrl("https://mainnet.infura.io/v3/95310f60af7b44bb8f3b13c043a00c8f"));
         
