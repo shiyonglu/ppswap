@@ -35,5 +35,12 @@ contract MyFirstTest is Test {
        return vm.sign(userPk, MsgHash);
     }
 
+    function printBalances(address a, string memory desc) public{
+        console2.log("\n ---------------------------------------------------------------------------------------");
+        console2.log(desc);
+        console2.log("ETH balance: ", a.balance);
+        console2.log("---------------------------------------------------------------------------------------\n ");
+    }
+
 
 }
