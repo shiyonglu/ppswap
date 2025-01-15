@@ -1,15 +1,15 @@
 /*
  *  Command: 
  *  1.  simulate locally
- *        forge script script/Counter.s.sol:CounterScript 
+ *        forge script script/DeployContract.s.sol:CounterScript 
  *  2. simulate remotely 
- *        forge script script/Counter.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL
- *      $GOERLI_RPC_URL is obtained from https://www.alchemy.com/ and cofigured at ~/.bashrc  
+ *        forge script script/DeployContract.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL
+ *      $GOERLI_RPC_URL is obtained from https://www.alchemy.com/ or https://https://www.infura.io/, and cofigured at ~/.bashrc
  *  3. deploy in real 
- *     forge script script/Counter.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL --broadcast
+ *     forge script script/DeployContract.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL --broadcast
  *
  *  4. deploy and verify the contract
- *      forge script script/Counter.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL --broadcast --verify
+ *      forge script script/DeployContract.s.sol:CounterScript --rpc-url $GOERLI_RPC_URL --broadcast --verify
  *   
  */
 
