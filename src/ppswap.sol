@@ -5,6 +5,8 @@ ERC20 token they own, set their desired price in Ether, and define the maximum q
 can accept these offers by sending the corresponding Ether amount, executing trades directly through the contract, which securely 
 handles the token transfers with proper approvals. This flexible trading mechanism is further enhanced by detailed event logging 
 for transparency and offers robust security features like reentrancy guards to ensure safe and reliable transactions.
+
+Hint: can we implement a bonding curve for PPS price: https://medium.com/coinmonks/token-bonding-curves-explained-7a9332198e0e
 */
 
 
