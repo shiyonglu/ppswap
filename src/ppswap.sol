@@ -89,14 +89,4 @@ contract PPSwap is ERC20 {
         require(success, "Failed to send Ether");
         emit SellPPS(amtPPS, amtETH);
     }
-
-    function withdrawPPS(uint256 amtPPS) public onlyContractOwner {
-        _transfer(address(this), trustAccount, amtPPS);
-        emit Withdraw(amtPPS);
-    }
-
-    function depositPPS(uint256 amtPPS) public {
-        _transfer(msg.sender, address(this), amtPPS);
-        emit Deposit(amtPPS);
-    }
 }
