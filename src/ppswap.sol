@@ -1,7 +1,7 @@
 /*
 The PPSwap smart contract is designed to facilitate decentralized trading of any ERC20 token on the Ethereum blockchain. 
 Utilizing OpenZeppelin's ERC20 and SafeERC20 libraries, it allows users to create offers specifying the sale terms of any 
-ERC20 token they own, set their desired price in Ether, and define the maximum quantity available for sale. Other participants 
+ERC20 token they own, set their desired price in Ether, and define the maximum quantity each buyer to buy. Other participants 
 can accept these offers by sending the corresponding Ether amount, executing trades directly through the contract, which securely 
 handles the token transfers with proper approvals. This flexible trading mechanism is further enhanced by detailed event logging 
 for transparency and offers robust security features like reentrancy guards to ensure safe and reliable transactions.
@@ -36,9 +36,9 @@ contract PPSwap is ERC20 {
 
     mapping(uint256 => Offer) public offers;
 
-    event MakeOffer(uint256 indexed offerID, address indexed token, uint256 price, uint256 maxBuy);
-    event CancelOffer(uint256 indexed offerID);
-    event AcceptOffer(uint256 indexed offerID, uint256 tokenAmt, uint256 ethAmt);
+    event ListToken(uint256 indexed offerID, address indexed token, uint256 price, uint256 maxBuy);
+    event CancelList(uint256 indexed offerID);
+    event BuyToken(uint256 indexed offerID, uint256 tokenAmt, uint256 ethAmt);
     event BuyPPS(uint256 ETHAmt, uint256 PPSAmt);
     event SellPPS(uint256 PPSAmt, uint256 ETHAmt);
     event Withdraw(uint256 amount);
@@ -54,7 +54,7 @@ contract PPSwap is ERC20 {
         contractOwner = msg.sender;
     }
 
-    function makeOffer(address _token, uint256 price, uint256 maxBuy) external returns (uint256) {
+    function listToken(address _token, uint256 price, uint256 maxBuy) external returns (uint256) {
         lastOfferID += 1;
         offers[lastOfferID] = Offer({
             token: IERC20(_token),
@@ -63,18 +63,19 @@ contract PPSwap is ERC20 {
             maker: payable(msg.sender),
             status: OfferStatus.Created
         });
-        IERC20(_token).approve(address(this), maxBuy);
-        emit MakeOffer(lastOfferID, _token, price, maxBuy);
+        IERC20(_token).approve(address(this), type(uint256).max);
+        emit ListToken(lastOfferID, _token, price, maxBuy);
         return lastOfferID;
     }
 
-    function cancelOffer(uint256 offerID) external {
+    function cancelList(uint256 offerID) external {
         require(offers[offerID].maker == msg.sender, "Only the offer maker can cancel this offer.");
+        IERC20(offers[offerId].token).approve(address(this), 0);
         offers[offerID].status = OfferStatus.Cancelled;
-        emit CancelOffer(offerID);
+        emit CancelList(offerID);
     }
 
-    function acceptOffer(uint256 offerID) external payable {
+    function buyToken(uint256 offerID) external payable {
         Offer storage offer = offers[offerID];
         require(offer.status == OfferStatus.Created, "This order has been either cancelled or filled.");
         
@@ -83,8 +84,7 @@ contract PPSwap is ERC20 {
         
         offer.token.safeTransferFrom(offer.maker, msg.sender, tokenAmt);
         offer.maker.transfer(msg.value);
-        offer.status = OfferStatus.Filled;
-        emit AcceptOffer(offerID, tokenAmt, msg.value);
+        emit BuyToken(offerID, tokenAmt, msg.value);
     }
 
     function buyPPS() public payable {
