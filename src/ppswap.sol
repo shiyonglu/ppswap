@@ -1,3 +1,13 @@
+/*
+The PPSwap smart contract is designed to facilitate decentralized trading of any ERC20 token on the Ethereum blockchain. 
+Utilizing OpenZeppelin's ERC20 and SafeERC20 libraries, it allows users to create offers specifying the sale terms of any 
+ERC20 token they own, set their desired price in Ether, and define the maximum quantity available for sale. Other participants 
+can accept these offers by sending the corresponding Ether amount, executing trades directly through the contract, which securely 
+handles the token transfers with proper approvals. This flexible trading mechanism is further enhanced by detailed event logging 
+for transparency and offers robust security features like reentrancy guards to ensure safe and reliable transactions.
+*/
+
+
 // SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.20;
 
