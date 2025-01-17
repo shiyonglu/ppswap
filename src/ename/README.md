@@ -9,4 +9,8 @@
 8. Use chatgpt 3.5 to generate a defaut page as a start, which you can improve manually with help from chatgpt.
 9. If you like to support ssl, go to: https://www.zerossl.com/ and start with a FREE SSL certificate for days. Make sure: 1) the certificates are in the a diretory and should be readable ONLY by the web serer (tomcat); 2) the right port 8443/443 is used and opened in AWS security group; 3) shutdown and restart the the web server; 4) It might take a while to take effect. Try https://letsencrypt.org/
 
+# The EName contract on Polygon
+1. The contract address： 0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A
+2. The contract page: [https://polygonscan.com/address/0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A#code](https://polygonscan.com/address/0xBAA5c79d9a4C9E60a19D1C7884E2b400A6D8211A#code)
+   
    
