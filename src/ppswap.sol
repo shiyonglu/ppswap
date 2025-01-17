@@ -9,7 +9,7 @@ contract PPSwap is ERC20 {
 
     uint256 public constant INITIAL_SUPPLY = 1e27; // 1 billion tokens, assuming 18 decimals
     uint256 public lastOfferID = 0; 
-    uint256 public ppsPrice = 500000; // Price of PPS per ETH (5000*100)
+    uint256 public ppsPrice = 0.0001 ether;      // how much ether for 1 unit of PPS (10***18)
     address payable public trustAccount; 
     address public contractOwner;
 
@@ -53,6 +53,7 @@ contract PPSwap is ERC20 {
             maker: payable(msg.sender),
             status: OfferStatus.Created
         });
+        token.approve(address(this), maxBuy);
         emit MakeOffer(lastOfferID, _token, price, maxBuy);
         return lastOfferID;
     }
@@ -67,7 +68,7 @@ contract PPSwap is ERC20 {
         Offer storage offer = offers[offerID];
         require(offer.status == OfferStatus.Created, "This order has been either cancelled or filled.");
         
-        uint256 tokenAmt = msg.value * offer.price / 1e18; // Calculate the amount of token to be bought based on ETH sent
+        uint256 tokenAmt = msg.value * 1e18 / offer.price; // Calculate the amount of token to be bought based on ETH sent
         require(tokenAmt <= offer.maxBuy, "The amount you buy exceeds the buy limit.");
         
         offer.token.safeTransferFrom(offer.maker, msg.sender, tokenAmt);
@@ -77,13 +78,13 @@ contract PPSwap is ERC20 {
     }
 
     function buyPPS() public payable {
-        uint256 rawPPSAmt = ppsPrice * msg.value;
+        uint256 rawPPSAmt = msg.value * 1e18 / ppsPrice;
         _transfer(address(this), msg.sender, rawPPSAmt);
         emit BuyPPS(msg.value, rawPPSAmt);
     }
 
     function sellPPS(uint256 amtPPS) public {
-        uint256 amtETH = amtPPS / ppsPrice;
+        uint256 amtETH = ppsPrice * amtPPS / 1e18;
         _transfer(msg.sender, address(this), amtPPS);
         (bool success, ) = msg.sender.call{value: amtETH}("");
         require(success, "Failed to send Ether");
