@@ -53,7 +53,7 @@ contract PPSwap is ERC20 {
             maker: payable(msg.sender),
             status: OfferStatus.Created
         });
-        token.approve(address(this), maxBuy);
+        IERC20(_token).approve(address(this), maxBuy);
         emit MakeOffer(lastOfferID, _token, price, maxBuy);
         return lastOfferID;
     }
