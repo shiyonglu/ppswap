@@ -22,7 +22,6 @@ contract PPSwap is ERC20 {
     uint256 public constant INITIAL_SUPPLY = 1e27; // 1 billion tokens, assuming 18 decimals
     uint256 public lastOfferID = 0; 
     uint256 public ppsPrice = 0.0001 ether;      // how much ether for 1 unit of PPS (10***18)
-    address payable public trustAccount; 
     address public contractOwner;
 
     enum OfferStatus { Created, Filled, Cancelled }
@@ -51,9 +50,8 @@ contract PPSwap is ERC20 {
     }
 
     constructor(address payable _trustAccount) ERC20("PPSwapTesting1", "PPS") {
-        _mint(_trustAccount, INITIAL_SUPPLY);
+        _mint(adddress(this), INITIAL_SUPPLY); // this contract has all PPS tokens initially
         contractOwner = msg.sender;
-        trustAccount = _trustAccount;
     }
 
     function makeOffer(address _token, uint256 price, uint256 maxBuy) external returns (uint256) {
