@@ -15,6 +15,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 
 contract PPSwap is ERC20 {
     using SafeERC20 for IERC20;
@@ -78,8 +79,10 @@ contract PPSwap is ERC20 {
     function buyToken(uint256 offerID) external payable {
         Offer storage offer = offers[offerID];
         require(offer.status == OfferStatus.Created, "This order has been either cancelled or filled.");
-        
-        uint256 tokenAmt = msg.value * 1e18 / offer.price; // Calculate the amount of token to be bought based on ETH sent
+
+        // Calculate the amount of token to be bought based on ETH sent
+        uint256 tokenDecimals = IERC20Metadata(address(offer.token)).decimals();  // Get the token decimals
+        uint256 tokenAmt = msg.value * 10**tokenDecimals / offer.price;
         require(tokenAmt <= offer.maxBuy, "The amount you buy exceeds the buy limit.");
         
         offer.token.safeTransferFrom(offer.maker, msg.sender, tokenAmt);
