@@ -212,7 +212,7 @@
         if (!isMetaMaskConnected) {
             try {
                 // Request MetaMask to connect
-                accounts = await window.ethereum.enable(); // Request user's permission
+                accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 isMetaMaskConnected = true;
                 connectButton.innerText = 'Disconnect from MetaMask';
 
