@@ -16,10 +16,7 @@ contract Payment {
         require(numOfUsers > 0, "No users provided");
         require(totalAmount > 0, "Amount must be greater than zero");
         uint256 amount = totalAmount / numOfUsers;
-        totalAmount = amount * numOfUsers;
-
-          // Transfer tokens to the contract using safeTransferFrom
-        IERC20(erc20TokenAddress).safeTransferFrom(msg.sender, address(this), totalAmount);
+        // totalAmount = amount * numOfUsers;
 
         // Distribute tokens to users
         for (uint256 i = 0; i < numOfUsers; i++) {
@@ -27,7 +24,7 @@ contract Payment {
             require(user != address(0), "Invalid user address");
 
             // Update user balances
-            IERC20(erc20TokenAddress).safeTransfer(user, amount);
+            IERC20(erc20TokenAddress).safeTransferFrom(msg.sender, user, amount);
         }
     }
 }
