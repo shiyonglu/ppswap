@@ -16,6 +16,7 @@ contract Payment {
         require(numOfUsers > 0, "No users provided");
         require(totalAmount > 0, "Amount must be greater than zero");
         uint256 amount = totalAmount / numOfUsers;
+        totalAmount = amount * numOfUsers;
 
           // Transfer tokens to the contract using safeTransferFrom
         IERC20(erc20TokenAddress).safeTransferFrom(msg.sender, address(this), totalAmount);
