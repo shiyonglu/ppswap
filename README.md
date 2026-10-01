@@ -25,6 +25,7 @@
 6. git clone https://github.com/dapphub/ds-test.git
 7. git clone https://github.com/Uniswap/v2-core.git
 8. git clone https://github.com/Uniswap/v2-periphery.git
+9. git clone https://github.com/Uniswap/v3-core.git
 
 ## Let's learn how to use the command ``forge``
 
