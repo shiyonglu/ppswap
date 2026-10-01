@@ -4,16 +4,17 @@
       or wsl --install ubuntu--22.04
 
 # download the ppswap project
-  1. install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git 
-  2. git clone https://github.com/shiyonglu/ppswap.git
+  1. install git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
+  2. cd ~ // to go to the home directory
+  3. git clone https://github.com/shiyonglu/ppswap.git
 
 # To install foundry: 
 
 1. download foundryup:
     curl -L https://foundry.paradigm.xyz | bash
 2.  install foundry:
-    foundryup
-3. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
+    foundryup          // you might need to set the path first, export PATH="$PATH:/home/shiyong/.foundry/bin
+4. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
 
 # To install OpenZeppelin, forge-std and the ds-test and some other libraries
 1. cd ppswap
