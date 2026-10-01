@@ -13,7 +13,7 @@
 1. download foundryup:
     curl -L https://foundry.paradigm.xyz | bash
 2.  install foundry:
-    foundryup          // you might need to set the path first, export PATH="$PATH:/home/shiyong/.foundry/bin
+    foundryup          // you might need to set the path first, export PATH=$PATH:/home/shiyong/.foundry/bin
 4. Now you have four commands to use:``forge``, ``cast``, ``anvil`` and ``chisel``.
 
 # To install OpenZeppelin, forge-std and the ds-test and some other libraries
