@@ -35,6 +35,7 @@
    or
    in the project home directory: forge init --force
 2. To compile: forge build
+   or forge build src/ppswap.sol
 3. To test all tests: forge test
 4. To test a particular test method: forge test --match-test testmethod -vv
 5. To test a whole test file and fork a blokchain: forge test --fork-url theURL --match-path test/mytest.t.sol -vvvv
