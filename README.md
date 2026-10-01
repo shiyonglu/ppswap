@@ -20,12 +20,13 @@
 1. cd ppswap
 2. mkdir lib
 3. cd lib
-4. git clone https://github.com/OpenZeppelin/openzeppelin-contracts.git
+4. git clone --branch v5.3.0 --depth 1 https://github.com/OpenZeppelin/openzeppelin-contracts.git openzeppelin-contracts
 5. git clone https://github.com/foundry-rs/forge-std.git
 6. git clone https://github.com/dapphub/ds-test.git
 7. git clone https://github.com/Uniswap/v2-core.git
 8. git clone https://github.com/Uniswap/v2-periphery.git
 9. git clone https://github.com/Uniswap/v3-core.git
+10. git clone https://github.com/Uniswap/v3-periphery.git
 
 ## Let's learn how to use the command ``forge``
 
