@@ -1,67 +1,185 @@
 // SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.17;
+pragma solidity ^0.8.20;
 
 import "forge-std/Test.sol";
 import "../src/ppswap.sol";
-import {FlashLoanAttacker} from "../src/FlashLoanAttacker.sol";
 
-/* 
-Check other assert functions here: https://book.getfoundry.sh/reference/ds-test#asserting
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-this contract, Bob: deployer
-   address(1): Alice: trustAccount, 
-*/
+contract MockToken is ERC20 {
+    constructor() ERC20("Mock Token", "MOCK") {}
 
-contract ppswapTest is Test {
-    PPSwap ppswap; 
-    FlashLoanAttacker attacker;
-    uint initialAmt = 1_000_000e18;
+    function mint(address to, uint256 amount) external {
+        _mint(to, amount);
+    }
+}
+
+contract PPSwapTest is Test {
+    PPSwap ppswap;
+    MockToken mockToken;
+
+    address alice = makeAddr("alice");
+    address bob   = makeAddr("bob");
 
     function setUp() public {
-        ppswap = new PPSwap(payable(address(this))); // Bob
-        attacker = new FlashLoanAttacker(address(ppswap));
-        ppswap.transfer(address(ppswap), initialAmt); // Bob send 1e6 to ppswap
+        ppswap = new PPSwap(payable(address(this)));
+        mockToken = new MockToken();
+
+        // Give Alice tokens to sell
+        mockToken.mint(alice, 1000 ether);
+
+        // Give Bob ETH to buy tokens/PPS
+        vm.deal(bob, 10 ether);
     }
 
-    function testDepositSavings() public {
-        uint balBefore = ppswap.balanceOf(address(ppswap));
-        assertEq(balBefore, initialAmt);
-        uint myBal = ppswap.balanceOf(address(this)); // Bob's balance
-        uint totalSupply = ppswap.totalSupply();
-        assertEq(myBal, totalSupply-initialAmt);
+    function testInitialSupply() public {
+        uint256 totalSupply = ppswap.totalSupply();
 
-        ppswap.depositSavings(1234);
-        uint balAfter = ppswap.balanceOf(address(ppswap));
-        assertEq(balAfter-balBefore, 1234);
+        assertEq(
+            totalSupply,
+            ppswap.INITIAL_SUPPLY()
+        );
+
+        // All PPS initially belongs to the PPSwap contract
+        assertEq(
+            ppswap.balanceOf(address(ppswap)),
+            totalSupply
+        );
     }
 
-    function testWithdrawSavings() public{
-        ppswap.depositSavings(5000);
-        uint balBefore = ppswap.balanceOf(address(this));
-        ppswap.withdrawSavings(1500);
-        uint balAfter = ppswap.balanceOf(address(this));
-        assertEq(balAfter-balBefore, 1500);
+    function testBuyPPS() public {
+        uint256 ppsBefore = ppswap.balanceOf(bob);
+        uint256 ethBefore = address(ppswap).balance;
+
+        vm.prank(bob);
+        ppswap.buyPPS{value: 0.5 ether}();
+
+        uint256 ppsAfter = ppswap.balanceOf(bob);
+        uint256 ethAfter = address(ppswap).balance;
+
+        // price = 0.0001 ETH / PPS
+        // 0.5 ETH buys 5000 PPS
+        assertEq(
+            ppsAfter - ppsBefore,
+            5000 ether
+        );
+
+        assertEq(
+            ethAfter - ethBefore,
+            0.5 ether
+        );
     }
 
-    function testFlashLoanAttack() public {
-       
-       attacker.callFlashLoan(1000);
-       uint balAttacker = ppswap.balanceOf(address(attacker));
-       assertEq(balAttacker, 1000);
+    function testSellPPS() public {
+        // Bob first buys PPS so the contract has ETH
+        vm.prank(bob);
+        ppswap.buyPPS{value: 1 ether}();
+
+        uint256 bobEthBefore = bob.balance;
+        uint256 bobPPSBefore = ppswap.balanceOf(bob);
+
+        // Sell 1000 PPS
+        vm.prank(bob);
+        ppswap.sellPPS(1000 ether);
+
+        uint256 bobEthAfter = bob.balance;
+        uint256 bobPPSAfter = ppswap.balanceOf(bob);
+
+        // 1000 PPS * 0.0001 ETH = 0.1 ETH
+        assertEq(
+            bobEthAfter - bobEthBefore,
+            0.1 ether
+        );
+
+        assertEq(
+            bobPPSBefore - bobPPSAfter,
+            1000 ether
+        );
     }
 
-    function testBuy() public
-    {
-        uint balBefore = address(ppswap).balance;
+    function testListToken() public {
+        vm.startPrank(alice);
 
-        (bool success, ) = address(ppswap).call{value: 1000}("");
-        if(!success) revert("Sending ETH fails");
-        uint balAfter = address(ppswap).balance;
-        assertEq(balAfter-balBefore, 1000);
+        // Alice must explicitly approve PPSwap
+        mockToken.approve(address(ppswap), 1000 ether);
 
-        uint bal1 = ppswap.balanceOf(address(this));         
-        ppswap.buyPPS{value: 0.5e18}();
-        uint bal2 = ppswap.balanceOf(address(this));    
-        assertEq(bal2-bal1, 250000*10**18);
+        uint256 offerID = ppswap.listToken(
+            address(mockToken),
+            0.01 ether,
+            100 ether
+        );
+
+        vm.stopPrank();
+
+        assertEq(offerID, 1);
+        assertEq(ppswap.lastOfferID(), 1);
+    }
+
+    function testBuyListedToken() public {
+        // Alice approves PPSwap to spend her MOCK
+        vm.startPrank(alice);
+
+        mockToken.approve(
+            address(ppswap),
+            1000 ether
+        );
+
+        uint256 offerID = ppswap.listToken(
+            address(mockToken),
+            0.01 ether,   // 0.01 ETH per token
+            100 ether
+        );
+
+        vm.stopPrank();
+
+        uint256 aliceTokenBefore = mockToken.balanceOf(alice);
+        uint256 bobTokenBefore = mockToken.balanceOf(bob);
+        uint256 aliceEthBefore = alice.balance;
+
+        // Bob spends 0.02 ETH -> receives 2 tokens
+        vm.prank(bob);
+        ppswap.buyToken{value: 0.02 ether}(offerID);
+
+        assertEq(
+            mockToken.balanceOf(bob) - bobTokenBefore,
+            2 ether
+        );
+
+        assertEq(
+            aliceTokenBefore - mockToken.balanceOf(alice),
+            2 ether
+        );
+
+        assertEq(
+            alice.balance - aliceEthBefore,
+            0.02 ether
+        );
+    }
+
+    function testCancelList() public {
+        vm.startPrank(alice);
+
+        mockToken.approve(
+            address(ppswap),
+            1000 ether
+        );
+
+        uint256 offerID = ppswap.listToken(
+            address(mockToken),
+            0.01 ether,
+            100 ether
+        );
+
+        ppswap.cancelList(offerID);
+
+        vm.stopPrank();
+
+        (, , , , PPSwap.OfferStatus status) =
+            ppswap.offers(offerID);
+
+        assertEq(
+            uint256(status),
+            uint256(PPSwap.OfferStatus.Cancelled)
+        );
     }
 }
